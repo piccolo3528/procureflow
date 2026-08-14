@@ -1,0 +1,19 @@
+{
+  "name": "procure_flow_capm",
+  "version": "1.0.0",
+  "dependencies": {
+    "@sap/cds": "^9"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^2",
+    "@sap/cds-dk": "^10.0.6"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-procure_flow": "cds watch --open procureflow/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "private": true,
+  "workspaces": [
+    "app/*"
+  ]
+}

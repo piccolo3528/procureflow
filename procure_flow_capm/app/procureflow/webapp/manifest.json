@@ -1,0 +1,195 @@
+{
+  "_version": "1.81.0",
+  "sap.app": {
+    "id": "procureflow",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/procure-flow/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.20.2",
+      "toolsId": "3a1014f4-89cb-442b-bd56-b903e51190b4"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.150.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.tnt": {},
+        "sap.uxap": {},
+        "sap.f": {},
+        "sap.suite.ui.microchart": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "procureflow.i18n.i18n"
+        }
+      },
+      "mock": {
+        "type": "sap.ui.model.odata.v4.ODataModel",
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        },
+        "dataSource": "mainService"
+      },
+      "ui": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "model/mockData.json"
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "appContainer",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "procureflow.view",
+        "async": true,
+        "viewPath": "procureflow.view"
+      },
+      "routes": [
+        {
+          "name": "Dashboard",
+          "pattern": "",
+          "target": ["Dashboard"]
+        },
+        {
+          "name": "PurchaseRequests",
+          "pattern": "pr",
+          "target": ["PurchaseRequests"]
+        },
+        {
+          "name": "PRDetail",
+          "pattern": "pr/{id}",
+          "target": ["PRDetail"]
+        },
+        {
+          "name": "Approvals",
+          "pattern": "approvals",
+          "target": ["Approvals"]
+        },
+        {
+          "name": "Vendors",
+          "pattern": "vendors",
+          "target": ["Vendors"]
+        },
+        {
+          "name": "PurchaseOrders",
+          "pattern": "po",
+          "target": ["PurchaseOrders"]
+        },
+        {
+          "name": "GoodsReceipts",
+          "pattern": "gr",
+          "target": ["GoodsReceipts"]
+        },
+        {
+          "name": "Reports",
+          "pattern": "reports",
+          "target": ["Reports"]
+        },
+        {
+          "name": "Settings",
+          "pattern": "settings",
+          "target": ["Settings"]
+        }
+      ],
+      "targets": {
+        "Dashboard": {
+          "id": "Dashboard",
+          "name": "Dashboard"
+        },
+        "PurchaseRequests": {
+          "id": "PurchaseRequests",
+          "name": "PurchaseRequests"
+        },
+        "PRDetail": {
+          "id": "PRDetail",
+          "name": "PRDetail"
+        },
+        "Approvals": {
+          "id": "Approvals",
+          "name": "Approvals"
+        },
+        "Vendors": {
+          "id": "Vendors",
+          "name": "Vendors"
+        },
+        "PurchaseOrders": {
+          "id": "PurchaseOrders",
+          "name": "PurchaseOrders"
+        },
+        "GoodsReceipts": {
+          "id": "GoodsReceipts",
+          "name": "GoodsReceipts"
+        },
+        "Reports": {
+          "id": "Reports",
+          "name": "Reports"
+        },
+        "Settings": {
+          "id": "Settings",
+          "name": "Settings"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "procureflow.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}

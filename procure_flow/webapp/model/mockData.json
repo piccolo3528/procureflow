@@ -1,0 +1,32 @@
+{
+  "roles": ["Employee", "Manager", "Procurement", "Finance", "Admin"],
+  "users": [
+      { "id": "U1", "name": "Alex Johnson", "role": "Employee", "dept": "IT", "avatar": "https://placehold.co/100x100/0070F2/FFFFFF?text=AJ" },
+      { "id": "U2", "name": "Sarah Chen", "role": "Manager", "dept": "IT", "avatar": "https://placehold.co/100x100/107E3E/FFFFFF?text=SC" },
+      { "id": "U3", "name": "Mike Torres", "role": "Finance", "dept": "Finance", "avatar": "https://placehold.co/100x100/E9730C/FFFFFF?text=MT" },
+      { "id": "U4", "name": "Lisa Ray", "role": "Procurement", "dept": "Operations", "avatar": "https://placehold.co/100x100/BB0000/FFFFFF?text=LR" }
+  ],
+  "purchaseRequests": [
+      { "id": "PR-2026-001", "title": "MacBook Pro M3 for New Hires", "requestor": "Alex Johnson", "date": "2026-07-25", "amount": 14500.00, "currency": "USD", "status": "Pending Approval", "priority": "High", "department": "IT", "vendor": "Apple Inc." },
+      { "id": "PR-2026-002", "title": "Q3 Cloud Hosting AWS", "requestor": "Sarah Chen", "date": "2026-07-26", "amount": 25000.00, "currency": "USD", "status": "Approved", "priority": "Medium", "department": "IT", "vendor": "Amazon Web Services" },
+      { "id": "PR-2026-003", "title": "Office Furniture Expansion", "requestor": "Emily Davis", "date": "2026-07-20", "amount": 8200.00, "currency": "USD", "status": "PO Created", "priority": "Low", "department": "Facilities", "vendor": "Steelcase" },
+      { "id": "PR-2026-004", "title": "Marketing Agency Retainer", "requestor": "Tom Wilson", "date": "2026-07-27", "amount": 50000.00, "currency": "USD", "status": "Rejected", "priority": "High", "department": "Marketing", "vendor": "Ogilvy" },
+      { "id": "PR-2026-005", "title": "Developer Conference Tickets", "requestor": "Alex Johnson", "date": "2026-07-27", "amount": 3500.00, "currency": "USD", "status": "Draft", "priority": "Medium", "department": "IT", "vendor": "Eventbrite" }
+  ],
+  "vendors": [
+      { "id": "V-001", "name": "Apple Inc.", "category": "Hardware", "rating": 4.8, "status": "Active", "spend": 125000 },
+      { "id": "V-002", "name": "Amazon Web Services", "category": "Software", "rating": 4.9, "status": "Active", "spend": 350000 },
+      { "id": "V-003", "name": "Dell Technologies", "category": "Hardware", "rating": 4.2, "status": "Active", "spend": 85000 },
+      { "id": "V-004", "name": "Office Depot", "category": "Supplies", "rating": 3.5, "status": "Inactive", "spend": 12000 }
+  ],
+  "metrics": {
+      "totalSpend": 1450200,
+      "pendingApprovals": 12,
+      "activePOs": 45,
+      "budgetUtilization": 68
+  },
+  "appState": {
+      "currentUserRole": "Employee",
+      "sidebarExpanded": true
+  }
+}

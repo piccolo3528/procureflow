@@ -1,0 +1,68 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form">
+    <Dialog id="createPRDialog" title="Create Purchase Request" contentWidth="800px" stretch="{device>/system/phone}">
+        <content>
+            <f:SimpleForm editable="true" layout="ColumnLayout" columnsM="2" columnsL="2" columnsXL="2">
+                <f:content>
+                    <Label text="Title" required="true" />
+                    <Input value="{newPR>/title}" placeholder="E.g., Q4 Software Licenses" />
+                    
+                    <Label text="Priority" />
+                    <ComboBox selectedKey="{newPR>/priority}">
+                        <core:Item key="Normal" text="Normal" />
+                        <core:Item key="High" text="High" />
+                        <core:Item key="Low" text="Low" />
+                    </ComboBox>
+
+                    <Label text="Department" />
+                    <Input value="{ui>/users/0/dept}" enabled="false" />
+
+                    <Label text="Expected Delivery Date" />
+                    <DatePicker value="{newPR>/deliveryDate}" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd" />
+
+                    <Label text="Business Justification" required="true" />
+                    <TextArea value="{newPR>/justification}" rows="3" placeholder="Explain why this purchase is necessary..." />
+                </f:content>
+            </f:SimpleForm>
+
+            <Panel headerText="Line Items" class="sapUiSmallMargin">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title text="Items" />
+                        <ToolbarSpacer />
+                        <Button icon="sap-icon://add" text="Add Item" press=".onAddItemPress" type="Transparent" />
+                    </OverflowToolbar>
+                </headerToolbar>
+                <Table items="{newPR>/items}" noDataText="No items added yet.">
+                    <columns>
+                        <Column><Text text="Item Description" /></Column>
+                        <Column width="5rem"><Text text="Qty" /></Column>
+                        <Column width="8rem"><Text text="Price" /></Column>
+                        <Column width="4rem" hAlign="Center"><Text text="" /></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Input value="{newPR>description}" placeholder="Item description" />
+                                <Input value="{newPR>qty}" type="Number" />
+                                <Input value="{newPR>price}" type="Number" />
+                                <Button icon="sap-icon://delete" type="Reject" press=".onDeleteItemPress" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+                <HBox justifyContent="End" class="sapUiSmallMarginTop">
+                    <Title text="Total: USD (Calculated upon save)" level="H5" />
+                </HBox>
+            </Panel>
+        </content>
+        <buttons>
+            <Button text="Save as Draft" press=".onSaveDraftPress" />
+            <Button text="Submit Request" type="Emphasized" press=".onSubmitPRPress" />
+            <Button text="Cancel" press=".onClosePRDialog" />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

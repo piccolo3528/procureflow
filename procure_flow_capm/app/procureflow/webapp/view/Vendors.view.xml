@@ -1,0 +1,37 @@
+<mvc:View controllerName="procureflow.controller.Vendors"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:layout="sap.ui.layout">
+    
+    <Page title="Vendor Management">
+        <headerContent>
+            <Button icon="sap-icon://add" text="Onboard Vendor" type="Emphasized" press=".onOnboardPress"/>
+        </headerContent>
+        <content>
+            <f:GridList id="vendorGrid" items="{mock>/Vendors}" class="sapUiSmallMargin">
+                <f:customLayout>
+                    <layout:GridBasicLayout gridTemplateColumns="repeat(auto-fit, minmax(16rem, 1fr))" gridGap="1rem"/>
+                </f:customLayout>
+                <f:GridListItem type="Active" press=".onVendorPress">
+                    <VBox class="sapUiSmallMargin">
+                        <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
+                            <Avatar initials="{= ${mock>name}.charAt(0) }" displaySize="S"/>
+                            <ObjectStatus text="{mock>status}" state="{= ${mock>status} === 'Active' ? 'Success' : 'Error'}" inverted="true" />
+                        </HBox>
+                        <Title text="{mock>name}" level="H3" class="sapUiTinyMarginBottom"/>
+                        <Text text="{mock>category}" class="sapUiSmallMarginBottom" />
+                        
+                        <HBox justifyContent="SpaceBetween" alignItems="Center">
+                            <HBox alignItems="Center">
+                                <core:Icon src="sap-icon://favorite" color="#ffc107" class="sapUiTinyMarginEnd" xmlns:core="sap.ui.core"/>
+                                <Text text="{mock>rating}" />
+                            </HBox>
+                            <Text text="Spend: ${mock>spend}" />
+                        </HBox>
+                    </VBox>
+                </f:GridListItem>
+            </f:GridList>
+        </content>
+    </Page>
+</mvc:View>

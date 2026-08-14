@@ -1,0 +1,52 @@
+PHASE 0
+Project Planning
+
+↓
+
+PHASE 1
+Enterprise Data Model
+
+↓
+
+PHASE 2
+ABAP Dictionary
+
+↓
+
+PHASE 3
+Sample Data
+
+↓
+
+PHASE 4
+Gateway OData
+
+↓
+
+PHASE 5
+CAP Integration
+
+↓
+
+PHASE 6
+SAPUI5
+
+↓
+
+PHASE 7
+Reports
+
+↓
+
+PHASE 8
+Security
+
+↓
+
+PHASE 9
+Deployment
+
+↓
+
+PHASE 10
+Interview Ready

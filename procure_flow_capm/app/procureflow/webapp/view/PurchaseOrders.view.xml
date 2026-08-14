@@ -1,0 +1,66 @@
+<mvc:View controllerName="procureflow.controller.PurchaseOrders"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:core="sap.ui.core">
+    <Page title="Purchase Orders" showNavButton="true" navButtonPress=".onNavBack">
+        <headerContent>
+            <Button icon="sap-icon://export" text="Export" />
+        </headerContent>
+        <content>
+            <fb:FilterBar id="filterBar" search=".onSearch" showClearOnFB="true" clear=".onClear">
+                <fb:filterGroupItems>
+                    <fb:FilterGroupItem groupName="G1" name="search" label="Search" visibleInFilterBar="true">
+                        <fb:control>
+                            <SearchField id="searchField" placeholder="Search by ID or Vendor..." />
+                        </fb:control>
+                    </fb:FilterGroupItem>
+                    <fb:FilterGroupItem groupName="G1" name="status" label="Status" visibleInFilterBar="true">
+                        <fb:control>
+                            <ComboBox id="statusFilter">
+                                <core:Item key="All" text="All Statuses" />
+                                <core:Item key="Issued" text="Issued" />
+                                <core:Item key="Partially Received" text="Partially Received" />
+                                <core:Item key="Closed" text="Closed" />
+                            </ComboBox>
+                        </fb:control>
+                    </fb:FilterGroupItem>
+                </fb:filterGroupItems>
+            </fb:FilterBar>
+
+            <Table id="poTable" items="{mock>/PurchaseOrders}" mode="None">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title text="Purchase Orders" />
+                        <ToolbarSpacer />
+                        <Button icon="sap-icon://sort" tooltip="Sort" />
+                        <Button icon="sap-icon://action-settings" tooltip="Settings" />
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column><Text text="PO Number" /></Column>
+                    <Column><Text text="Title" /></Column>
+                    <Column><Text text="Vendor" /></Column>
+                    <Column><Text text="Amount" /></Column>
+                    <Column><Text text="Status" /></Column>
+                    <Column><Text text="Buyer" /></Column>
+                    <Column><Text text="Date" /></Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <ObjectIdentifier title="{mock>ID}" text="Ref: {mock>prID}" />
+                            <Text text="{mock>title}" />
+                            <Text text="{mock>vendor}"/>
+                            <ObjectNumber number="{mock>amount}" unit="{mock>currency}" />
+                            <ObjectStatus text="{mock>status}" 
+                                state="{= ${mock>status} === 'Closed' ? 'Success' : (${mock>status} === 'Issued' ? 'Information' : 'Warning') }" />
+                            <Text text="{mock>buyer}" />
+                            <Text text="{mock>date}" />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

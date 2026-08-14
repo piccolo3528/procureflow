@@ -1,0 +1,45 @@
+<mvc:View controllerName="procureflow.controller.App"
+    displayBlock="true"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt">
+    <tnt:ToolPage id="toolPage">
+        <tnt:header>
+            <tnt:ToolHeader>
+                <Button id="sideNavigationToggleButton"
+                        icon="sap-icon://menu2"
+                        type="Transparent"
+                        press=".onSideNavButtonPress"
+                        tooltip="Menu"/>
+                <Title text="ProcureFlow" level="H1" titleStyle="H3"/>
+                <ToolbarSpacer />
+                <SearchField width="300px" placeholder="Search POs, Requests, Vendors..." />
+                <Button icon="sap-icon://bell" type="Transparent" tooltip="Notifications" />
+                <Button icon="sap-icon://customer" type="Transparent" press=".onProfilePress" tooltip="Profile" text="{ui>/appState/currentUserRole}"/>
+            </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:sideContent>
+            <tnt:SideNavigation id="sideNavigation" expanded="{ui>/appState/sidebarExpanded}" itemSelect=".onItemSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem text="Dashboard" icon="sap-icon://bov" key="Dashboard" />
+                    <tnt:NavigationListGroup text="Procurement">
+                        <tnt:NavigationListItem text="Purchase Requests" icon="sap-icon://document-text" key="PurchaseRequests" />
+                        <tnt:NavigationListItem text="Approval Center" icon="sap-icon://accept" key="Approvals" />
+                        <tnt:NavigationListItem text="Purchase Orders" icon="sap-icon://receipt" key="PurchaseOrders" />
+                        <tnt:NavigationListItem text="Goods Receipt" icon="sap-icon://shipping-status" key="GoodsReceipts" />
+                    </tnt:NavigationListGroup>
+                    <tnt:NavigationListGroup text="Master Data">
+                        <tnt:NavigationListItem text="Vendor Management" icon="sap-icon://group" key="Vendors" />
+                    </tnt:NavigationListGroup>
+                    <tnt:NavigationListGroup text="System">
+                        <tnt:NavigationListItem text="Reports &amp; Analytics" icon="sap-icon://bar-chart" key="Reports" />
+                        <tnt:NavigationListItem text="Settings" icon="sap-icon://action-settings" key="Settings" />
+                    </tnt:NavigationListGroup>
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContents>
+            <App id="appContainer" />
+        </tnt:mainContents>
+    </tnt:ToolPage>
+</mvc:View>

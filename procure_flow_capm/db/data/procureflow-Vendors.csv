@@ -1,0 +1,5 @@
+ID;name;category;rating;status;spend
+V-001;Apple Inc.;Hardware;4.8;Active;125000.00
+V-002;Amazon Web Services;Software;4.9;Active;350000.00
+V-003;Dell Technologies;Hardware;4.2;Active;85000.00
+V-004;Office Depot;Supplies;3.5;Inactive;12000.00

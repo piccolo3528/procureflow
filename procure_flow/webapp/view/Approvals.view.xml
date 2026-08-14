@@ -1,0 +1,54 @@
+<mvc:View controllerName="procureflow.controller.Approvals"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout">
+    
+    <Page title="Approval Center">
+        <content>
+            <layout:Splitter height="100%">
+                <layout:contentAreas>
+                    <VBox width="auto">
+                        <layoutData><layout:SplitterLayoutData size="35%" resizable="true"/></layoutData>
+                        <SearchField width="100%" placeholder="Search tasks..." class="sapUiTinyMargin"/>
+                        <List id="approvalList" items="{mock>/PurchaseRequests}" mode="SingleSelectMaster" selectionChange=".onListSelect">
+                            <StandardListItem 
+                                title="{mock>title}"
+                                description="{mock>ID} - {mock>requestor}"
+                                info="{mock>amount} {mock>currency}"
+                                type="Active" />
+                        </List>
+                    </VBox>
+                    <VBox id="detailBox" visible="false" class="sapUiSmallMargin">
+                        <layoutData><layout:SplitterLayoutData size="auto"/></layoutData>
+                        <ObjectHeader title="{mock>title}" 
+                            number="{mock>amount}" 
+                            numberUnit="{mock>currency}"
+                            intro="{mock>ID}">
+                            <attributes>
+                                <ObjectAttribute title="Requestor" text="{mock>requestor}"/>
+                                <ObjectAttribute title="Date" text="{mock>date}"/>
+                            </attributes>
+                        </ObjectHeader>
+                        
+                        <Panel headerText="Justification" class="sapUiSmallMarginBottom">
+                            <Text text="This is a critical request for the upcoming project kickoff. We need these resources to ensure the team can start development on time. Budget was pre-approved in last quarter's planning." />
+                        </Panel>
+
+                        <Panel headerText="Budget Impact (IT Dept)">
+                            <Text text="Utilized (65%) - Remaining: $85,500" />
+                            <ProgressIndicator percentValue="65" displayValue="65%" state="Information" class="sapUiTinyMarginTopBottom" />
+                            <MessageStrip text="This request will consume 17% of remaining budget." type="Warning" showIcon="true" />
+                        </Panel>
+
+                        <OverflowToolbar class="sapUiMediumMarginTop">
+                            <ToolbarSpacer/>
+                            <Button text="Request Info" />
+                            <Button text="Reject" type="Reject" press=".onActionPress"/>
+                            <Button text="Approve Request" type="Accept" press=".onActionPress"/>
+                        </OverflowToolbar>
+                    </VBox>
+                </layout:contentAreas>
+            </layout:Splitter>
+        </content>
+    </Page>
+</mvc:View>

@@ -1,0 +1,29 @@
+Starting CAP Project Generator...
+Using @sap/cds-dk [9.7.2] from C:\Users\mjamal\AppData\Roaming\npm\node_modules\@sap\cds-dk
+Using @sap/generator-cap-project [2.0.5] from [C:\Users\mjamal\AppData\Roaming\npm\node_modules\@sap\generator-cap-project]
+Using root path [c:\Users\mjamal\Desktop\proj\ProcureFlow]
+Prompting
+writing
+
+Creating project with nodejs
+
+Adding facet: nodejs
+
+Successfully initialized CAP project
+Continue with: code procure_flow_capm 
+
+
+Installing dependencies...
+
+added 110 packages, and audited 111 packages in 18s
+
+37 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+Finished installing dependencies
+
+Done setting up project procure_flow_capm
+Project is ready to use
+

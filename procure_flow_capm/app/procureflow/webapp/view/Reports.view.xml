@@ -1,0 +1,53 @@
+<mvc:View controllerName="procureflow.controller.Reports"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:mc="sap.suite.ui.microchart"
+    xmlns:layout="sap.ui.layout">
+    <Page title="Reports &amp; Analytics" showNavButton="true" navButtonPress=".onNavBack">
+        <content>
+            <layout:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSmallMargin">
+                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Total Spend" subheader="YTD" press="onPress">
+                    <tileContent>
+                        <TileContent footer="Current Quarter">
+                            <mc:NumericContent value="{mock>/Metrics('M1')/totalSpend}" valueColor="Good" indicator="Up" />
+                        </TileContent>
+                    </tileContent>
+                </GenericTile>
+
+                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Pending Approvals" subheader="Require Action">
+                    <tileContent>
+                        <TileContent>
+                            <mc:NumericContent value="{mock>/Metrics('M1')/pendingApprovals}" valueColor="Critical" />
+                        </TileContent>
+                    </tileContent>
+                </GenericTile>
+
+                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Budget Utilization" subheader="IT Department">
+                    <tileContent>
+                        <TileContent footer="Warning at 80%">
+                            <mc:RadialMicroChart size="Responsive" percentage="{mock>/Metrics('M1')/budgetUtilization}" valueColor="Critical"/>
+                        </TileContent>
+                    </tileContent>
+                </GenericTile>
+            </layout:Grid>
+            <Panel headerText="Spend by Vendor" class="sapUiSmallMargin">
+                <Table items="{mock>/Vendors}">
+                    <columns>
+                        <Column><Text text="Vendor" /></Column>
+                        <Column><Text text="Category" /></Column>
+                        <Column><Text text="Spend" /></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Text text="{mock>name}" />
+                                <Text text="{mock>category}" />
+                                <ObjectNumber number="{mock>spend}" unit="USD" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>

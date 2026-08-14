@@ -1,0 +1,136 @@
+<mvc:View controllerName="procureflow.controller.PRDetail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:uxap="sap.uxap"
+    xmlns:layout="sap.ui.layout">
+    
+    <uxap:ObjectPageLayout id="ObjectPageLayout" showTitleInHeaderContent="true" showHeaderContent="true" upperCaseAnchorBar="false">
+        <uxap:headerTitle>
+            <uxap:ObjectPageDynamicHeaderTitle>
+                <uxap:expandedHeading>
+                    <Title text="{mock>title}" wrapping="true" class="sapUiSmallMarginEnd"/>
+                </uxap:expandedHeading>
+                <uxap:snappedHeading>
+                    <Title text="{mock>title}" wrapping="true" class="sapUiSmallMarginEnd"/>
+                </uxap:snappedHeading>
+                <uxap:breadcrumbs>
+                    <Breadcrumbs>
+                        <Link text="Dashboard" press=".onNavToDashboard" />
+                        <Link text="Purchase Requests" press=".onNavBack" />
+                        <Link text="{mock>ID}" enabled="false" />
+                    </Breadcrumbs>
+                </uxap:breadcrumbs>
+                <uxap:actions>
+                    <Button text="Approve" type="Accept" visible="{= ${mock>status} === 'Pending Approval' &amp;&amp; ${ui>/appState/currentUserRole} === 'Manager'}" press=".onActionPress"/>
+                    <Button text="Reject" type="Reject" visible="{= ${mock>status} === 'Pending Approval' &amp;&amp; ${ui>/appState/currentUserRole} === 'Manager'}" press=".onActionPress"/>
+                    <Button text="Generate PO" type="Emphasized" visible="{= ${mock>status} === 'Approved' &amp;&amp; ${ui>/appState/currentUserRole} === 'Procurement'}" press=".onActionPress"/>
+                    <Button text="Edit" type="Transparent" visible="{= ${mock>status} !== 'Pending Approval' &amp;&amp; ${mock>status} !== 'Approved'}" press=".onActionPress"/>
+                </uxap:actions>
+            </uxap:ObjectPageDynamicHeaderTitle>
+        </uxap:headerTitle>
+        <uxap:headerContent>
+            <FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+                <layout:VerticalLayout class="sapUiSmallMarginRight sapUiSmallMarginBottom">
+                    <Label text="Status" />
+                    <ObjectStatus text="{mock>status}" 
+                        state="{= ${mock>status} === 'Approved' || ${mock>status} === 'PO Created' ? 'Success' : (${mock>status} === 'Pending Approval' ? 'Warning' : (${mock>status} === 'Rejected' ? 'Error' : 'None')) }" />
+                </layout:VerticalLayout>
+                <layout:VerticalLayout class="sapUiSmallMarginRight sapUiSmallMarginBottom">
+                    <Label text="Requestor" />
+                    <Text text="{mock>requestor}" />
+                </layout:VerticalLayout>
+                <layout:VerticalLayout class="sapUiSmallMarginRight sapUiSmallMarginBottom">
+                    <Label text="Total Amount" />
+                    <ObjectNumber number="{mock>amount}" unit="{mock>currency}" />
+                </layout:VerticalLayout>
+            </FlexBox>
+        </uxap:headerContent>
+        
+        <uxap:sections>
+            <uxap:ObjectPageSection title="General Information" id="sectionGeneral">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <layout:Grid defaultSpan="XL4 L4 M6 S12">
+                                <VBox>
+                                    <Label text="Request ID" class="sapUiTinyMarginBottom" design="Bold"/>
+                                    <Text text="{mock>ID}" />
+                                </VBox>
+                                <VBox>
+                                    <Label text="Department" class="sapUiTinyMarginBottom" design="Bold"/>
+                                    <Text text="{mock>department}" />
+                                </VBox>
+                                <VBox>
+                                    <Label text="Priority" class="sapUiTinyMarginBottom" design="Bold"/>
+                                    <Text text="{mock>priority}" />
+                                </VBox>
+                                <VBox>
+                                    <Label text="Preferred Vendor" class="sapUiTinyMarginBottom" design="Bold"/>
+                                    <Link text="{mock>vendor}" />
+                                </VBox>
+                                <VBox>
+                                    <Label text="Justification" class="sapUiTinyMarginBottom" design="Bold"/>
+                                    <Text text="Required for the new cohort of developers joining next month. Devices need to be provisioned before the 15th. Budget approved in Q3 planning." />
+                                </VBox>
+                            </layout:Grid>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <uxap:ObjectPageSection title="Line Items" id="sectionItems">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <Table>
+                                <columns>
+                                    <Column><Text text="Item" /></Column>
+                                    <Column><Text text="Qty" /></Column>
+                                    <Column><Text text="Unit Price" /></Column>
+                                    <Column hAlign="End"><Text text="Total" /></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <VBox>
+                                                <Text text="MacBook Pro 14 M3" />
+                                                <Text text="16GB RAM, 512GB SSD" />
+                                            </VBox>
+                                            <Text text="5" />
+                                            <Text text="$1,999.00" />
+                                            <Text text="$9,995.00" />
+                                        </cells>
+                                    </ColumnListItem>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <VBox>
+                                                <Text text="Apple Studio Display" />
+                                                <Text text="Standard glass" />
+                                            </VBox>
+                                            <Text text="3" />
+                                            <Text text="$1,599.00" />
+                                            <Text text="$4,797.00" />
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <uxap:ObjectPageSection title="Approval Workflow" id="sectionApproval">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <VBox class="sapUiMediumMargin">
+                                <Text text="Approval timeline mock representation" />
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+        </uxap:sections>
+    </uxap:ObjectPageLayout>
+</mvc:View>

@@ -1,0 +1,72 @@
+<mvc:View controllerName="procureflow.controller.Dashboard"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout">
+    <Page title="Dashboard">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <MessageStrip
+                    text="Welcome back! Here is what's happening today."
+                    type="Information"
+                    showIcon="true"
+                    showCloseButton="true"
+                    class="sapUiBottomMargin">
+                </MessageStrip>
+
+                <HBox visible="{= ${ui>/appState/currentUserRole} === 'Employee' }" class="sapUiBottomMargin">
+                    <Button text="New Request" type="Emphasized" icon="sap-icon://add" press=".onCreatePress" />
+                </HBox>
+                
+                <!-- KPIs -->
+                <layout:Grid defaultSpan="XL3 L4 M6 S12" class="sapUiBottomMargin">
+                    <GenericTile header="My Open Requests" subheader="Active" press=".onNavToPR" class="sapUiTinyMargin">
+                        <TileContent>
+                            <NumericContent value="3" icon="sap-icon://document-text" valueColor="Good"/>
+                        </TileContent>
+                    </GenericTile>
+                    
+                    <GenericTile header="Drafts" subheader="Saved" class="sapUiTinyMargin">
+                        <TileContent>
+                            <NumericContent value="1" icon="sap-icon://edit" valueColor="Neutral"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile header="Recent Deliveries" class="sapUiTinyMargin">
+                        <TileContent>
+                            <NumericContent value="2" icon="sap-icon://shipping-status" valueColor="Good"/>
+                        </TileContent>
+                    </GenericTile>
+                    
+                    <GenericTile header="Pending Approvals" subheader="Requires action" press=".onNavToApprovals" class="sapUiTinyMargin" visible="{= ${ui>/appState/currentUserRole} === 'Manager' }">
+                        <TileContent>
+                            <NumericContent value="{mock>/Metrics('M1')/pendingApprovals}" icon="sap-icon://accept" valueColor="Critical"/>
+                        </TileContent>
+                    </GenericTile>
+                </layout:Grid>
+
+                <Title text="Recent Purchase Requests" level="H2" class="sapUiTinyMarginBottom" />
+                <Table items="{ path: 'mock>/PurchaseRequests', length: 4 }" mode="SingleSelectMaster" selectionChange=".onPRSelect">
+                    <columns>
+                        <Column><Text text="Request ID" /></Column>
+                        <Column><Text text="Title" /></Column>
+                        <Column><Text text="Amount" /></Column>
+                        <Column><Text text="Status" /></Column>
+                        <Column><Text text="Date" /></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem type="Navigation">
+                            <cells>
+                                <ObjectIdentifier title="{mock>ID}" />
+                                <Text text="{mock>title}" />
+                                <ObjectNumber number="{mock>amount}" unit="{mock>currency}" />
+                                <ObjectStatus text="{mock>status}" 
+                                    state="{= ${mock>status} === 'Approved' || ${mock>status} === 'PO Created' ? 'Success' : (${mock>status} === 'Pending Approval' ? 'Warning' : (${mock>status} === 'Rejected' ? 'Error' : 'None')) }" />
+                                <Text text="{mock>date}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

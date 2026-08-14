@@ -1,0 +1,45 @@
+<mvc:View controllerName="procureflow.controller.Settings"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Page title="System Settings" showNavButton="true" navButtonPress=".onNavBack">
+        <content>
+            <f:SimpleForm editable="true" layout="ColumnLayout" title="User Preferences" class="sapUiSmallMargin">
+                <f:content>
+                    <Label text="Theme" />
+                    <ComboBox selectedKey="sap_horizon">
+                        <core:Item key="sap_horizon" text="SAP Horizon (Light)" />
+                        <core:Item key="sap_horizon_dark" text="SAP Horizon (Dark)" />
+                    </ComboBox>
+
+                    <Label text="Language" />
+                    <ComboBox selectedKey="en">
+                        <core:Item key="en" text="English" />
+                        <core:Item key="de" text="German" />
+                        <core:Item key="fr" text="French" />
+                    </ComboBox>
+
+                    <Label text="Notifications" />
+                    <Switch state="true" customTextOn="Yes" customTextOff="No" />
+                </f:content>
+            </f:SimpleForm>
+            
+            <f:SimpleForm editable="true" layout="ColumnLayout" title="Procurement Rules" class="sapUiSmallMargin">
+                <f:content>
+                    <Label text="Auto-Approve PRs under" />
+                    <Input value="500" type="Number" description="USD" />
+
+                    <Label text="Require 3 Bids Over" />
+                    <Input value="10000" type="Number" description="USD" />
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button text="Save Settings" type="Emphasized" press=".onSave" />
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>
