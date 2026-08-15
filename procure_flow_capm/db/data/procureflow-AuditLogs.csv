@@ -1,0 +1,7 @@
+ID;user_ID;action;businessObject;documentID;previousValue;newValue;createdAt
+AL-1;U6;Submit;PurchaseRequest;PR-2026-003;Draft;Pending Manager Approval;2026-07-20T08:15:00Z
+AL-2;U2;Approve;PurchaseRequest;PR-2026-003;Pending Manager Approval;Pending Finance Approval;2026-07-21T09:00:00Z
+AL-3;U3;Approve;PurchaseRequest;PR-2026-003;Pending Finance Approval;Pending Procurement;2026-07-22T10:00:00Z
+AL-4;U4;SelectVendor;PurchaseRequest;PR-2026-003;Pending Procurement;Vendor Selected;2026-07-23T11:00:00Z
+AL-5;U4;GeneratePO;PurchaseRequest;PR-2026-003;Vendor Selected;PO Created;2026-07-28T09:00:00Z
+AL-6;U2;Reject;PurchaseRequest;PR-2026-004;Pending Manager Approval;Rejected;2026-07-28T09:30:00Z

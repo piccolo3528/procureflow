@@ -1,3 +1,8 @@
-ID;parent_ID;description;qty;price
-I1;PR-2026-001;MacBook Pro 14 M3;5;1999.00
-I2;PR-2026-001;Apple Studio Display;3;1599.00
+ID;parent_ID;description;category;unit;qty;price;total;requiredDate;notes
+I1;PR-2026-001;MacBook Pro 14 M3;Hardware;EA;5;1999.00;9995.00;2026-08-15;16GB RAM, 512GB SSD
+I2;PR-2026-001;Apple Studio Display;Hardware;EA;3;1599.00;4797.00;2026-08-15;Standard glass
+I3;PR-2026-002;AWS Compute Credits;Software;EA;1;25000.00;25000.00;2026-08-01;Q3 reserved instances
+I4;PR-2026-003;Standing Desk;Facilities;EA;10;500.00;5000.00;2026-08-05;Adjustable height
+I5;PR-2026-003;Ergonomic Chair;Facilities;EA;10;320.00;3200.00;2026-08-05;
+I6;PR-2026-004;Retainer Fee;Services;MONTH;1;50000.00;50000.00;2026-08-10;
+I7;PR-2026-005;Conference Pass;Services;EA;2;1750.00;3500.00;;Early bird pricing

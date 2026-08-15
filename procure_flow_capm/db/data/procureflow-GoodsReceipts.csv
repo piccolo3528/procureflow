@@ -1,2 +1,2 @@
-ID;poID;date;receiver;status;notes
-GR-2026-001;PO-2026-001;2026-07-30;John Doe;Received;Items arrived in good condition.
+ID;purchaseOrder_ID;date;receivedBy_ID;location;status;notes
+GR-2026-001;PO-2026-001;2026-07-30;U8;Main Warehouse;Posted;Items arrived in good condition, two chairs damaged in transit.

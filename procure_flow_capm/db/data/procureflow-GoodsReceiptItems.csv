@@ -1,3 +1,3 @@
-ID;parent_ID;description;qtyOrdered;qtyReceived;condition
-GRI-1;GR-2026-001;Desks;10;10;Good
-GRI-2;GR-2026-001;Chairs;10;8;Damaged
+ID;parent_ID;orderItem_ID;description;qtyOrdered;qtyReceived;qtyRejected;inspectionResult;damageInfo;remarks
+GRI-1;GR-2026-001;POI-1;Standing Desk;10;10;0;Good;;
+GRI-2;GR-2026-001;POI-2;Ergonomic Chair;10;8;2;Damaged;Two chairs had cracked frames on arrival.;Vendor notified for replacement.

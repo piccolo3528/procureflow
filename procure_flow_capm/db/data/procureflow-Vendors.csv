@@ -1,5 +1,6 @@
-ID;name;category;rating;status;spend
-V-001;Apple Inc.;Hardware;4.8;Active;125000.00
-V-002;Amazon Web Services;Software;4.9;Active;350000.00
-V-003;Dell Technologies;Hardware;4.2;Active;85000.00
-V-004;Office Depot;Supplies;3.5;Inactive;12000.00
+ID;name;category;type;contactPerson;email;phone;address;taxId;paymentTerms;rating;performanceScore;status;spend
+V-001;Apple Inc.;Hardware;Manufacturer;Tim Cook Office;sales@apple.com;+1-800-275-2273;One Apple Park Way, Cupertino, CA;US-APL-001;Net 30;4.8;95;Active;125000.00
+V-002;Amazon Web Services;Software;Service Provider;AWS Enterprise Support;support@aws.amazon.com;+1-206-266-1000;410 Terry Ave N, Seattle, WA;US-AWS-002;Net 30;4.9;97;Active;350000.00
+V-003;Dell Technologies;Hardware;Manufacturer;Dell Business Sales;sales@dell.com;+1-800-289-3355;1 Dell Way, Round Rock, TX;US-DEL-003;Net 45;4.2;88;Active;85000.00
+V-004;Office Depot;Supplies;Retailer;Business Accounts;business@officedepot.com;+1-800-463-3768;6600 N Military Trl, Boca Raton, FL;US-OFD-004;Net 15;3.5;70;Inactive;12000.00
+V-005;Steelcase;Facilities;Manufacturer;Steelcase Dealer Network;info@steelcase.com;+1-616-247-2710;901 44th St SE, Grand Rapids, MI;US-STC-005;Net 30;4.3;90;Active;8200.00

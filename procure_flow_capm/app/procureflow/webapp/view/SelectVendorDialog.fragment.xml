@@ -1,0 +1,20 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+    <Dialog id="selectVendorDialog" title="Select Vendor" contentWidth="450px">
+        <content>
+            <f:SimpleForm id="vendorForm" editable="true" layout="ColumnLayout" class="sapUiSmallMargin">
+                <f:content>
+                    <Label id="lblVendor" text="Vendor" required="true"/>
+                    <Select id="vendorSelect" items="{vsel>/vendors}" selectedKey="{vsel>/vendorId}" width="100%">
+                        <core:Item key="{vsel>ID}" text="{vsel>name}"/>
+                    </Select>
+                    <Label id="lblVendorReason" text="Selection Reason"/>
+                    <TextArea id="vendorReason" value="{vsel>/reason}" rows="3" width="100%" placeholder="Why this vendor?"/>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <buttons>
+            <Button id="vendorConfirmBtn" text="Select Vendor" type="Emphasized" press=".onSelectVendorConfirm"/>
+            <Button id="vendorCancelBtn" text="Cancel" press=".onSelectVendorCancel"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

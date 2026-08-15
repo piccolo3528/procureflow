@@ -1,142 +1,107 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/ui/core/Fragment",
-    "sap/ui/model/json/JSONModel"
-], function (Controller, Fragment, JSONModel) {
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
+    "sap/ui/model/json/JSONModel",
+    "./PRDialogHelper",
+    "../model/formatter"
+], function (Controller, Filter, FilterOperator, JSONModel, PRDialogHelper, formatter) {
     "use strict";
 
+    var PENDING_STATUS_BY_ROLE = {
+        Manager: ["Pending Manager Approval"],
+        Finance: ["Pending Finance Approval"],
+        Procurement: ["Pending Procurement"],
+        Admin: ["Pending Manager Approval", "Pending Finance Approval", "Pending Procurement"]
+    };
+
     return Controller.extend("procureflow.controller.Dashboard", {
+        formatter: formatter,
+
         onInit: function () {
+            this.getView().setModel(new JSONModel({
+                myOpenRequests: 0,
+                myDrafts: 0,
+                pendingMyAction: 0,
+                activeVendors: 0
+            }), "kpi");
+            this.getOwnerComponent().getRouter().getRoute("Dashboard").attachPatternMatched(this._onRouteMatched, this);
+        },
+
+        _onRouteMatched: function () {
+            this._refreshKpis();
+        },
+
+        _count: function (sPath, aFilters) {
+            var oModel = this.getOwnerComponent().getModel();
+            var oBinding = oModel.bindList(sPath, undefined, undefined, aFilters, { $count: true });
+            return oBinding.getHeaderContext().requestProperty("$count");
+        },
+
+        _refreshKpis: function () {
+            var oUser = this.getOwnerComponent().getModel("ui").getProperty("/currentUser");
+            var oKpiModel = this.getView().getModel("kpi");
+            var aPendingStatuses = PENDING_STATUS_BY_ROLE[oUser.role] || [];
+
+            this._count("/PurchaseRequests", [
+                new Filter("requestor_ID", FilterOperator.EQ, oUser.id),
+                new Filter("status", FilterOperator.NE, "Draft")
+            ]).then(function (n) { oKpiModel.setProperty("/myOpenRequests", n); });
+
+            this._count("/PurchaseRequests", [
+                new Filter("requestor_ID", FilterOperator.EQ, oUser.id),
+                new Filter("status", FilterOperator.EQ, "Draft")
+            ]).then(function (n) { oKpiModel.setProperty("/myDrafts", n); });
+
+            if (aPendingStatuses.length) {
+                this._count("/PurchaseRequests", [
+                    new Filter(aPendingStatuses.map(function (s) { return new Filter("status", FilterOperator.EQ, s); }), false)
+                ]).then(function (n) { oKpiModel.setProperty("/pendingMyAction", n); });
+            } else {
+                oKpiModel.setProperty("/pendingMyAction", 0);
+            }
+
+            this._count("/Vendors", [new Filter("status", FilterOperator.EQ, "Active")])
+                .then(function (n) { oKpiModel.setProperty("/activeVendors", n); });
+
+            var oRecentTable = this.byId("recentTable");
+            var oRecentBinding = oRecentTable && oRecentTable.getBinding("items");
+            if (oRecentBinding) {
+                oRecentBinding.filter([new Filter("requestor_ID", FilterOperator.EQ, oUser.id)]);
+            }
+
+            var oActivityBinding = this.byId("activityTable") && this.byId("activityTable").getBinding("items");
+            if (oActivityBinding) {
+                oActivityBinding.refresh();
+            }
         },
 
         onCreatePress: function () {
-            var oView = this.getView();
-
-            if (!this._pCreatePRDialog) {
-                this._pCreatePRDialog = Fragment.load({
-                    id: oView.getId(),
-                    name: "procureflow.view.CreatePRDialog",
-                    controller: this
-                }).then(function (oDialog) {
-                    oView.addDependent(oDialog);
-                    return oDialog;
-                });
-            }
-
-            this._pCreatePRDialog.then(function (oDialog) {
-                var oNewPRModel = new JSONModel({
-                    title: "",
-                    priority: "Normal",
-                    deliveryDate: "",
-                    justification: "",
-                    items: []
-                });
-                oDialog.setModel(oNewPRModel, "newPR");
-                oDialog.open();
-            });
+            PRDialogHelper.open(this);
         },
 
-        onAddItemPress: function (oEvent) {
-            // Because the dialog is dependent on the view, we can get the model from the view or dialog
-            var oDialog = this.byId("createPRDialog");
-            var oModel = oDialog.getModel("newPR");
-            if(oModel) {
-                var aItems = oModel.getProperty("/items") || [];
-                aItems.push({ description: "", qty: 1, price: 0 });
-                oModel.setProperty("/items", aItems);
-            }
+        onAddItemPress: function () {
+            PRDialogHelper.addItem(this);
         },
 
         onDeleteItemPress: function (oEvent) {
-            var oItem = oEvent.getSource().getParent();
-            var oContext = oItem.getBindingContext("newPR");
-            var sPath = oContext.getPath();
-            var idx = parseInt(sPath.substring(sPath.lastIndexOf('/') + 1));
-            
-            var oDialog = this.byId("createPRDialog");
-            var oModel = oDialog.getModel("newPR");
-            var aItems = oModel.getProperty("/items");
-            aItems.splice(idx, 1);
-            oModel.setProperty("/items", aItems);
+            PRDialogHelper.deleteItem(oEvent);
         },
 
         onClosePRDialog: function () {
-            this.byId("createPRDialog").close();
+            PRDialogHelper.close(this);
         },
 
         onSubmitPRPress: function () {
-            var oDialog = this.byId("createPRDialog");
-            var oNewPRData = oDialog.getModel("newPR").getData();
-            var oModel = this.getView().getModel("mock");
-            var oListBinding = oModel.bindList("/PurchaseRequests");
-            
-            var sNewId = "PR-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 1000);
-            
-            var aItems = [];
-            var nAmount = 0;
-            if (oNewPRData.items && oNewPRData.items.length > 0) {
-                oNewPRData.items.forEach(function(item, idx) {
-                    var qty = parseInt(item.qty) || 0;
-                    var price = parseFloat(item.price) || 0;
-                    nAmount += (qty * price);
-                    aItems.push({
-                        ID: sNewId + "-I" + (idx+1),
-                        description: item.description,
-                        qty: qty,
-                        price: price
-                    });
-                });
-            }
-
-            var oContext = oListBinding.create({
-                ID: sNewId,
-                title: oNewPRData.title || "New Request",
-                requestor: "Alex Johnson",
-                date: new Date().toISOString().split('T')[0],
-                amount: nAmount,
-                currency: "USD",
-                status: "Pending Approval",
-                priority: oNewPRData.priority,
-                department: "IT",
-                vendor: "TBD",
-                justification: oNewPRData.justification,
-                items: aItems
-            });
-
-            oContext.created().then(function () {
-                sap.m.MessageToast.show("Purchase Request " + sNewId + " submitted successfully.");
-                oDialog.close();
-            }).catch(function (oError) {
-                sap.m.MessageToast.show("Error submitting PR.");
-            });
+            PRDialogHelper.submit(this);
         },
 
         onSaveDraftPress: function () {
-            var oDialog = this.byId("createPRDialog");
-            var oNewPRData = oDialog.getModel("newPR").getData();
-            var oModel = this.getView().getModel("mock");
-            var oListBinding = oModel.bindList("/PurchaseRequests");
-            
-            var sNewId = "PR-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 1000);
-            
-            var oContext = oListBinding.create({
-                ID: sNewId,
-                title: oNewPRData.title || "Draft Request",
-                requestor: "Alex Johnson",
-                date: new Date().toISOString().split('T')[0],
-                amount: 0,
-                currency: "USD",
-                status: "Draft",
-                priority: oNewPRData.priority,
-                department: "IT",
-                vendor: "TBD",
-                justification: oNewPRData.justification
-            });
+            PRDialogHelper.saveDraft(this);
+        },
 
-            oContext.created().then(function () {
-                sap.m.MessageToast.show("Draft " + sNewId + " saved.");
-                oDialog.close();
-            });
+        onRequestCreated: function () {
+            this._refreshKpis();
         },
 
         onNavToPR: function () {
@@ -149,9 +114,9 @@ sap.ui.define([
 
         onPRSelect: function (oEvent) {
             var oItem = oEvent.getParameter("listItem");
-            var oContext = oItem.getBindingContext("mock");
+            var oContext = oItem.getBindingContext();
             var sId = oContext.getProperty("ID");
-            
+
             this.getOwnerComponent().getRouter().navTo("PRDetail", {
                 id: encodeURIComponent(sId)
             });

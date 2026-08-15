@@ -22,41 +22,43 @@
                                 <core:Item key="Issued" text="Issued" />
                                 <core:Item key="Partially Received" text="Partially Received" />
                                 <core:Item key="Closed" text="Closed" />
+                                <core:Item key="Cancelled" text="Cancelled" />
                             </ComboBox>
                         </fb:control>
                     </fb:FilterGroupItem>
                 </fb:filterGroupItems>
             </fb:FilterBar>
 
-            <Table id="poTable" items="{mock>/PurchaseOrders}" mode="None">
+            <Table id="poTable" items="{path: '/PurchaseOrders', parameters: {$orderby: 'date desc'}}" mode="None">
                 <headerToolbar>
                     <OverflowToolbar>
                         <Title text="Purchase Orders" />
                         <ToolbarSpacer />
-                        <Button icon="sap-icon://sort" tooltip="Sort" />
-                        <Button icon="sap-icon://action-settings" tooltip="Settings" />
+                        <Button icon="sap-icon://shipping-status" text="Goods Receipt" press=".onNavToGoodsReceipts" />
                     </OverflowToolbar>
                 </headerToolbar>
                 <columns>
                     <Column><Text text="PO Number" /></Column>
-                    <Column><Text text="Title" /></Column>
+                    <Column><Text text="Purchase Request" /></Column>
                     <Column><Text text="Vendor" /></Column>
                     <Column><Text text="Amount" /></Column>
                     <Column><Text text="Status" /></Column>
                     <Column><Text text="Buyer" /></Column>
                     <Column><Text text="Date" /></Column>
+                    <Column><Text text="" /></Column>
                 </columns>
                 <items>
                     <ColumnListItem>
                         <cells>
-                            <ObjectIdentifier title="{mock>ID}" text="Ref: {mock>prID}" />
-                            <Text text="{mock>title}" />
-                            <Text text="{mock>vendor}"/>
-                            <ObjectNumber number="{mock>amount}" unit="{mock>currency}" />
-                            <ObjectStatus text="{mock>status}" 
-                                state="{= ${mock>status} === 'Closed' ? 'Success' : (${mock>status} === 'Issued' ? 'Information' : 'Warning') }" />
-                            <Text text="{mock>buyer}" />
-                            <Text text="{mock>date}" />
+                            <ObjectIdentifier title="{ID}" />
+                            <Text text="{request_ID}" />
+                            <Text text="{vendor/name}"/>
+                            <ObjectNumber number="{amount}" unit="{currency}" />
+                            <ObjectStatus text="{status}"
+                                state="{= ${status} === 'Closed' ? 'Success' : (${status} === 'Cancelled' ? 'Error' : (${status} === 'Issued' ? 'Information' : 'Warning')) }" />
+                            <Text text="{buyer/name}" />
+                            <Text text="{date}" />
+                            <Button text="Cancel" type="Transparent" press=".onCancelPOPress"/>
                         </cells>
                     </ColumnListItem>
                 </items>

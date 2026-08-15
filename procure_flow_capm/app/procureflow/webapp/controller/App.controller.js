@@ -5,6 +5,8 @@ sap.ui.define([
 ], function (Controller, Fragment, MessageToast) {
     "use strict";
 
+    var VALID_ROUTES = ["Dashboard", "PurchaseRequests", "Approvals", "Vendors", "PurchaseOrders", "GoodsReceipts", "Reports", "Settings"];
+
     return Controller.extend("procureflow.controller.App", {
         onInit: function () {
         },
@@ -20,9 +22,8 @@ sap.ui.define([
         onItemSelect: function (oEvent) {
             var oItem = oEvent.getParameter("item");
             var sKey = oItem.getKey();
-            
-            // Only route if the target exists
-            if (["Dashboard", "PurchaseRequests", "Approvals", "Vendors"].indexOf(sKey) !== -1) {
+
+            if (VALID_ROUTES.indexOf(sKey) !== -1) {
                 var oRouter = this.getOwnerComponent().getRouter();
                 oRouter.navTo(sKey);
             } else {
@@ -51,11 +52,17 @@ sap.ui.define([
         },
 
         onRoleSelect: function (oEvent) {
-            var sRole = oEvent.getParameter("listItem").getTitle();
-            this.getView().getModel("ui").setProperty("/appState/currentUserRole", sRole);
+            var oListItem = oEvent.getParameter("listItem");
+            var oContext = oListItem.getBindingContext("ui");
+            var oUser = oContext.getObject();
+
+            var oUiModel = this.getView().getModel("ui");
+            oUiModel.setProperty("/currentUser", oUser);
+
+            // switching "role" re-authenticates the OData model as a different mocked CAP user
+            this.getOwnerComponent().switchDemoUser(oUser.id);
+
             this.byId("rolePopover").close();
-            
-            // Re-route to dashboard to refresh data view
             this.getOwnerComponent().getRouter().navTo("Dashboard");
         }
     });

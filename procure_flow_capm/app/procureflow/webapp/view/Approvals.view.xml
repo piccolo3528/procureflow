@@ -2,49 +2,52 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:layout="sap.ui.layout">
-    
+
     <Page title="Approval Center">
         <content>
             <layout:Splitter height="100%">
                 <layout:contentAreas>
                     <VBox width="auto">
                         <layoutData><layout:SplitterLayoutData size="35%" resizable="true"/></layoutData>
-                        <SearchField width="100%" placeholder="Search tasks..." class="sapUiTinyMargin"/>
-                        <List id="approvalList" items="{mock>/PurchaseRequests}" mode="SingleSelectMaster" selectionChange=".onListSelect">
-                            <StandardListItem 
-                                title="{mock>title}"
-                                description="{mock>ID} - {mock>requestor}"
-                                info="{mock>amount} {mock>currency}"
+                        <SearchField width="100%" placeholder="Search tasks..." class="sapUiTinyMargin" liveChange=".onSearch" id="searchField"/>
+                        <List id="approvalList" items="{path: '/PurchaseRequests', parameters: {$orderby: 'date asc'}}" mode="SingleSelectMaster" selectionChange=".onListSelect" noDataText="Nothing pending your action right now.">
+                            <StandardListItem
+                                title="{title}"
+                                description="{ID} - {requestor/name}"
+                                info="{amount} {currency}"
                                 type="Active" />
                         </List>
                     </VBox>
                     <VBox id="detailBox" visible="false" class="sapUiSmallMargin">
                         <layoutData><layout:SplitterLayoutData size="auto"/></layoutData>
-                        <ObjectHeader title="{mock>title}" 
-                            number="{mock>amount}" 
-                            numberUnit="{mock>currency}"
-                            intro="{mock>ID}">
+                        <ObjectHeader title="{title}"
+                            number="{amount}"
+                            numberUnit="{currency}"
+                            intro="{ID}">
                             <attributes>
-                                <ObjectAttribute title="Requestor" text="{mock>requestor}"/>
-                                <ObjectAttribute title="Date" text="{mock>date}"/>
+                                <ObjectAttribute title="Requestor" text="{requestor/name}"/>
+                                <ObjectAttribute title="Department" text="{department/name}"/>
+                                <ObjectAttribute title="Date" text="{date}"/>
                             </attributes>
                         </ObjectHeader>
-                        
+
                         <Panel headerText="Justification" class="sapUiSmallMarginBottom">
-                            <Text text="This is a critical request for the upcoming project kickoff. We need these resources to ensure the team can start development on time. Budget was pre-approved in last quarter's planning." />
+                            <Text text="{justification}" />
                         </Panel>
 
-                        <Panel headerText="Budget Impact (IT Dept)">
-                            <Text text="Utilized (65%) - Remaining: $85,500" />
-                            <ProgressIndicator percentValue="65" displayValue="65%" state="Information" class="sapUiTinyMarginTopBottom" />
-                            <MessageStrip text="This request will consume 17% of remaining budget." type="Warning" showIcon="true" />
+                        <Panel headerText="Budget Impact" class="sapUiSmallMarginBottom" visible="{= !!${department} }">
+                            <Text text="{= 'Department budget: ' + ${department/budgetAvailable} + ' available, ' + ${department/budgetUsed} + ' already used.' }" />
+                            <ProgressIndicator
+                                percentValue="{= ${department/budgetAvailable} ? Math.round((${department/budgetUsed} / ${department/budgetAvailable}) * 100) : 0 }"
+                                displayValue="{= ${department/budgetAvailable} ? Math.round((${department/budgetUsed} / ${department/budgetAvailable}) * 100) + '%' : '0%' }"
+                                state="Information" class="sapUiTinyMarginTopBottom" />
                         </Panel>
 
                         <OverflowToolbar class="sapUiMediumMarginTop">
                             <ToolbarSpacer/>
-                            <Button text="Request Info" />
-                            <Button text="Reject" type="Reject" press=".onActionPress"/>
-                            <Button text="Approve Request" type="Accept" press=".onActionPress"/>
+                            <Button text="Request Changes" press=".onRequestChangesPress"/>
+                            <Button text="Reject" type="Reject" press=".onRejectPress"/>
+                            <Button text="Approve Request" type="Accept" press=".onApprovePress"/>
                         </OverflowToolbar>
                     </VBox>
                 </layout:contentAreas>

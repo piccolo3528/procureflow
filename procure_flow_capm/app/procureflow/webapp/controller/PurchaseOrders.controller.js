@@ -2,8 +2,11 @@ sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
-    "sap/ui/core/routing/History"
-], function (Controller, Filter, FilterOperator, History) {
+    "sap/ui/core/routing/History",
+    "sap/m/MessageToast",
+    "sap/m/MessageBox",
+    "../model/actions"
+], function (Controller, Filter, FilterOperator, History, MessageToast, MessageBox, actions) {
     "use strict";
 
     return Controller.extend("procureflow.controller.PurchaseOrders", {
@@ -20,12 +23,16 @@ sap.ui.define([
             }
         },
 
+        onNavToGoodsReceipts: function () {
+            this.getOwnerComponent().getRouter().navTo("GoodsReceipts");
+        },
+
         onSearch: function (oEvent) {
             var aFilters = [];
             var sQuery = this.byId("searchField").getValue();
             if (sQuery && sQuery.length > 0) {
                 var oFilter1 = new Filter("ID", FilterOperator.Contains, sQuery);
-                var oFilter2 = new Filter("vendor", FilterOperator.Contains, sQuery);
+                var oFilter2 = new Filter("vendor_ID", FilterOperator.Contains, sQuery);
                 aFilters.push(new Filter({filters: [oFilter1, oFilter2], and: false}));
             }
 
@@ -45,6 +52,21 @@ sap.ui.define([
             this.byId("searchField").setValue("");
             this.byId("statusFilter").setSelectedKey("All");
             this.onSearch();
+        },
+
+        onCancelPOPress: function (oEvent) {
+            var oContext = oEvent.getSource().getBindingContext();
+            var that = this;
+            MessageBox.confirm("Cancel this Purchase Order?", {
+                onClose: function (sAction) {
+                    if (sAction !== MessageBox.Action.OK) return;
+                    actions.invoke(oContext, "cancel", { reason: null }).then(function () {
+                        MessageToast.show("Purchase Order cancelled.");
+                    }).catch(function (oError) {
+                        MessageBox.error(oError.message || "Could not cancel Purchase Order.");
+                    });
+                }
+            });
         }
     });
 });

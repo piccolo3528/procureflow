@@ -2,29 +2,34 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:uxap="sap.uxap"
-    xmlns:layout="sap.ui.layout">
-    
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core">
+
     <uxap:ObjectPageLayout id="ObjectPageLayout" showTitleInHeaderContent="true" showHeaderContent="true" upperCaseAnchorBar="false">
         <uxap:headerTitle>
             <uxap:ObjectPageDynamicHeaderTitle>
                 <uxap:expandedHeading>
-                    <Title text="{mock>title}" wrapping="true" class="sapUiSmallMarginEnd"/>
+                    <Title text="{title}" wrapping="true" class="sapUiSmallMarginEnd"/>
                 </uxap:expandedHeading>
                 <uxap:snappedHeading>
-                    <Title text="{mock>title}" wrapping="true" class="sapUiSmallMarginEnd"/>
+                    <Title text="{title}" wrapping="true" class="sapUiSmallMarginEnd"/>
                 </uxap:snappedHeading>
                 <uxap:breadcrumbs>
                     <Breadcrumbs>
                         <Link text="Dashboard" press=".onNavToDashboard" />
                         <Link text="Purchase Requests" press=".onNavBack" />
-                        <Link text="{mock>ID}" enabled="false" />
+                        <Link text="{ID}" enabled="false" />
                     </Breadcrumbs>
                 </uxap:breadcrumbs>
                 <uxap:actions>
-                    <Button text="Approve" type="Accept" visible="{= ${mock>status} === 'Pending Approval' &amp;&amp; ${ui>/appState/currentUserRole} === 'Manager'}" press=".onActionPress"/>
-                    <Button text="Reject" type="Reject" visible="{= ${mock>status} === 'Pending Approval' &amp;&amp; ${ui>/appState/currentUserRole} === 'Manager'}" press=".onActionPress"/>
-                    <Button text="Generate PO" type="Emphasized" visible="{= ${mock>status} === 'Approved' &amp;&amp; ${ui>/appState/currentUserRole} === 'Procurement'}" press=".onActionPress"/>
-                    <Button text="Edit" type="Transparent" visible="{= ${mock>status} !== 'Pending Approval' &amp;&amp; ${mock>status} !== 'Approved'}" press=".onActionPress"/>
+                    <Button text="Submit" type="Emphasized" visible="{pageState>/canSubmit}" press=".onSubmitPress"/>
+                    <Button text="Delete" type="Transparent" visible="{pageState>/canDelete}" press=".onDeletePress"/>
+                    <Button text="Approve" type="Accept" visible="{pageState>/canApprove}" press=".onApprovePress"/>
+                    <Button text="Reject" type="Reject" visible="{pageState>/canReject}" press=".onRejectPress"/>
+                    <Button text="Request Changes" type="Transparent" visible="{pageState>/canRequestChanges}" press=".onRequestChangesPress"/>
+                    <Button text="Select Vendor" type="Emphasized" visible="{pageState>/canSelectVendor}" press=".onSelectVendorPress"/>
+                    <Button text="Generate PO" type="Emphasized" visible="{pageState>/canGeneratePO}" press=".onGeneratePOPress"/>
+                    <Button text="Cancel Request" type="Transparent" visible="{pageState>/canCancel}" press=".onCancelPress"/>
                 </uxap:actions>
             </uxap:ObjectPageDynamicHeaderTitle>
         </uxap:headerTitle>
@@ -32,20 +37,24 @@
             <FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
                 <layout:VerticalLayout class="sapUiSmallMarginRight sapUiSmallMarginBottom">
                     <Label text="Status" />
-                    <ObjectStatus text="{mock>status}" 
-                        state="{= ${mock>status} === 'Approved' || ${mock>status} === 'PO Created' ? 'Success' : (${mock>status} === 'Pending Approval' ? 'Warning' : (${mock>status} === 'Rejected' ? 'Error' : 'None')) }" />
+                    <ObjectStatus text="{status}"
+                        state="{= ${status} === 'Goods Received' || ${status} === 'PO Created' ? 'Success' : (${status} === 'Rejected' || ${status} === 'Cancelled' ? 'Error' : (${status} === 'Draft' ? 'None' : 'Warning')) }" />
                 </layout:VerticalLayout>
                 <layout:VerticalLayout class="sapUiSmallMarginRight sapUiSmallMarginBottom">
                     <Label text="Requestor" />
-                    <Text text="{mock>requestor}" />
+                    <Text text="{requestor/name}" />
+                </layout:VerticalLayout>
+                <layout:VerticalLayout class="sapUiSmallMarginRight sapUiSmallMarginBottom">
+                    <Label text="Department" />
+                    <Text text="{department/name}" />
                 </layout:VerticalLayout>
                 <layout:VerticalLayout class="sapUiSmallMarginRight sapUiSmallMarginBottom">
                     <Label text="Total Amount" />
-                    <ObjectNumber number="{mock>amount}" unit="{mock>currency}" />
+                    <ObjectNumber number="{amount}" unit="{currency}" />
                 </layout:VerticalLayout>
             </FlexBox>
         </uxap:headerContent>
-        
+
         <uxap:sections>
             <uxap:ObjectPageSection title="General Information" id="sectionGeneral">
                 <uxap:subSections>
@@ -54,23 +63,27 @@
                             <layout:Grid defaultSpan="XL4 L4 M6 S12">
                                 <VBox>
                                     <Label text="Request ID" class="sapUiTinyMarginBottom" design="Bold"/>
-                                    <Text text="{mock>ID}" />
-                                </VBox>
-                                <VBox>
-                                    <Label text="Department" class="sapUiTinyMarginBottom" design="Bold"/>
-                                    <Text text="{mock>department}" />
+                                    <Text text="{ID}" />
                                 </VBox>
                                 <VBox>
                                     <Label text="Priority" class="sapUiTinyMarginBottom" design="Bold"/>
-                                    <Text text="{mock>priority}" />
+                                    <Select selectedKey="{priority}" enabled="{pageState>/canEditItems}" width="10rem">
+                                        <core:Item key="Low" text="Low"/>
+                                        <core:Item key="Normal" text="Normal"/>
+                                        <core:Item key="High" text="High"/>
+                                    </Select>
                                 </VBox>
                                 <VBox>
-                                    <Label text="Preferred Vendor" class="sapUiTinyMarginBottom" design="Bold"/>
-                                    <Link text="{mock>vendor}" />
+                                    <Label text="Required Delivery Date" class="sapUiTinyMarginBottom" design="Bold"/>
+                                    <DatePicker value="{requiredDate}" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd" editable="{pageState>/canEditItems}" width="10rem"/>
                                 </VBox>
                                 <VBox>
-                                    <Label text="Justification" class="sapUiTinyMarginBottom" design="Bold"/>
-                                    <Text text="Required for the new cohort of developers joining next month. Devices need to be provisioned before the 15th. Budget approved in Q3 planning." />
+                                    <Label text="Selected Vendor" class="sapUiTinyMarginBottom" design="Bold"/>
+                                    <Text text="{= ${vendor/name} ? ${vendor/name} : 'Not yet selected' }" />
+                                </VBox>
+                                <VBox class="sapUiSmallMarginTop">
+                                    <Label text="Business Justification" class="sapUiTinyMarginBottom" design="Bold"/>
+                                    <TextArea value="{justification}" rows="2" width="100%" editable="{pageState>/canEditItems}"/>
                                 </VBox>
                             </layout:Grid>
                         </uxap:blocks>
@@ -78,38 +91,35 @@
                 </uxap:subSections>
             </uxap:ObjectPageSection>
 
-            <uxap:ObjectPageSection title="Line Items" id="sectionItems">
+            <uxap:ObjectPageSection title="Requested Items" id="sectionItems">
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection>
                         <uxap:blocks>
-                            <Table>
+                            <Table id="itemsTable" items="{items}">
+                                <headerToolbar>
+                                    <OverflowToolbar>
+                                        <Title text="Items"/>
+                                        <ToolbarSpacer/>
+                                        <Button icon="sap-icon://add" text="Add Item" type="Transparent" visible="{pageState>/canEditItems}" press=".onAddItemRowPress"/>
+                                    </OverflowToolbar>
+                                </headerToolbar>
                                 <columns>
-                                    <Column><Text text="Item" /></Column>
+                                    <Column><Text text="Description" /></Column>
+                                    <Column><Text text="Category" /></Column>
                                     <Column><Text text="Qty" /></Column>
                                     <Column><Text text="Unit Price" /></Column>
                                     <Column hAlign="End"><Text text="Total" /></Column>
+                                    <Column visible="{pageState>/canEditItems}"><Text text="" /></Column>
                                 </columns>
                                 <items>
                                     <ColumnListItem>
                                         <cells>
-                                            <VBox>
-                                                <Text text="MacBook Pro 14 M3" />
-                                                <Text text="16GB RAM, 512GB SSD" />
-                                            </VBox>
-                                            <Text text="5" />
-                                            <Text text="$1,999.00" />
-                                            <Text text="$9,995.00" />
-                                        </cells>
-                                    </ColumnListItem>
-                                    <ColumnListItem>
-                                        <cells>
-                                            <VBox>
-                                                <Text text="Apple Studio Display" />
-                                                <Text text="Standard glass" />
-                                            </VBox>
-                                            <Text text="3" />
-                                            <Text text="$1,599.00" />
-                                            <Text text="$4,797.00" />
+                                            <Input value="{description}" editable="{pageState>/canEditItems}"/>
+                                            <Input value="{category}" editable="{pageState>/canEditItems}"/>
+                                            <Input value="{qty}" type="Number" editable="{pageState>/canEditItems}"/>
+                                            <Input value="{price}" type="Number" editable="{pageState>/canEditItems}"/>
+                                            <ObjectNumber number="{total}"/>
+                                            <Button icon="sap-icon://delete" type="Reject" visible="{pageState>/canEditItems}" press=".onDeleteItemRowPress"/>
                                         </cells>
                                     </ColumnListItem>
                                 </items>
@@ -119,18 +129,84 @@
                 </uxap:subSections>
             </uxap:ObjectPageSection>
 
-            <uxap:ObjectPageSection title="Approval Workflow" id="sectionApproval">
+            <uxap:ObjectPageSection title="Approval History" id="sectionApproval">
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection>
                         <uxap:blocks>
-                            <VBox class="sapUiMediumMargin">
-                                <Text text="Approval timeline mock representation" />
+                            <Table id="approvalHistoryTable" items="{path: 'approvalHistory', parameters: {$orderby: 'createdAt asc'}}" noDataText="No approval activity yet.">
+                                <columns>
+                                    <Column><Text text="When" /></Column>
+                                    <Column><Text text="By" /></Column>
+                                    <Column><Text text="Action" /></Column>
+                                    <Column><Text text="Status Change" /></Column>
+                                    <Column><Text text="Comment" /></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <Text text="{path: 'createdAt', formatter: '.formatter.relativeDateTime'}" />
+                                            <Text text="{actor/name} ({role})" />
+                                            <ObjectStatus text="{action}" />
+                                            <Text text="{fromStatus} → {toStatus}" />
+                                            <Text text="{comment}" />
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <uxap:ObjectPageSection title="Comments" id="sectionComments">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <VBox>
+                                <List id="commentsList" items="{path: 'comments', parameters: {$orderby: 'createdAt asc'}}" noDataText="No comments yet.">
+                                    <StandardListItem
+                                        title="{author/name}"
+                                        description="{text}"
+                                        info="{path: 'createdAt', formatter: '.formatter.relativeDateTime'}" />
+                                </List>
+                                <HBox class="sapUiSmallMarginTop" alignItems="End">
+                                    <TextArea id="newCommentText" rows="2" width="100%" placeholder="Add a comment..." class="sapUiTinyMarginEnd"/>
+                                    <Button text="Post" type="Emphasized" press=".onPostComment"/>
+                                </HBox>
                             </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>
 
+            <uxap:ObjectPageSection title="Related Purchase Order" id="sectionPO">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <Table id="relatedPOTable" items="{purchaseOrders}" noDataText="No Purchase Order generated yet.">
+                                <columns>
+                                    <Column><Text text="PO Number" /></Column>
+                                    <Column><Text text="Vendor" /></Column>
+                                    <Column><Text text="Amount" /></Column>
+                                    <Column><Text text="Status" /></Column>
+                                    <Column><Text text="Date" /></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <ObjectIdentifier title="{ID}" />
+                                            <Text text="{vendor/name}" />
+                                            <ObjectNumber number="{amount}" unit="{currency}" />
+                                            <ObjectStatus text="{status}" state="{= ${status} === 'Closed' ? 'Success' : (${status} === 'Cancelled' ? 'Error' : 'Information') }"/>
+                                            <Text text="{date}" />
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
         </uxap:sections>
     </uxap:ObjectPageLayout>
 </mvc:View>

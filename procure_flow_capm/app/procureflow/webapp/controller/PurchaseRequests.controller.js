@@ -3,10 +3,8 @@ sap.ui.define([
     "sap/ui/core/routing/History",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
-    "sap/m/MessageToast",
-    "sap/ui/core/Fragment",
-    "sap/ui/model/json/JSONModel"
-], function (Controller, History, Filter, FilterOperator, MessageToast, Fragment, JSONModel) {
+    "./PRDialogHelper"
+], function (Controller, History, Filter, FilterOperator, PRDialogHelper) {
     "use strict";
 
     return Controller.extend("procureflow.controller.PurchaseRequests", {
@@ -41,7 +39,6 @@ sap.ui.define([
                 aFilters.push(new Filter("status", FilterOperator.EQ, sStatus));
             }
 
-            // update list binding
             var oList = this.byId("prTable");
             var oBinding = oList.getBinding("items");
             oBinding.filter(aFilters, "Application");
@@ -55,76 +52,43 @@ sap.ui.define([
 
         onPRSelect: function (oEvent) {
             var oItem = oEvent.getParameter("listItem");
-            var oContext = oItem.getBindingContext("mock");
+            var oContext = oItem.getBindingContext();
             var sId = oContext.getProperty("ID");
-            
+
             this.getOwnerComponent().getRouter().navTo("PRDetail", {
                 id: encodeURIComponent(sId)
             });
         },
 
         onCreatePress: function () {
-            var oView = this.getView();
-
-            if (!this._pCreatePRDialog) {
-                this._pCreatePRDialog = Fragment.load({
-                    id: oView.getId(),
-                    name: "procureflow.view.CreatePRDialog",
-                    controller: this
-                }).then(function (oDialog) {
-                    oView.addDependent(oDialog);
-                    return oDialog;
-                });
-            }
-
-            this._pCreatePRDialog.then(function (oDialog) {
-                var oNewPRModel = new JSONModel({
-                    title: "",
-                    priority: "Normal",
-                    deliveryDate: "",
-                    justification: "",
-                    items: []
-                });
-                oDialog.setModel(oNewPRModel, "newPR");
-                oDialog.open();
-            });
+            PRDialogHelper.open(this);
         },
 
-        onAddItemPress: function (oEvent) {
-            var oDialog = this.byId("createPRDialog");
-            var oModel = oDialog.getModel("newPR");
-            if(oModel) {
-                var aItems = oModel.getProperty("/items") || [];
-                aItems.push({ description: "", qty: 1, price: 0 });
-                oModel.setProperty("/items", aItems);
-            }
+        onAddItemPress: function () {
+            PRDialogHelper.addItem(this);
         },
 
         onDeleteItemPress: function (oEvent) {
-            var oItem = oEvent.getSource().getParent();
-            var oContext = oItem.getBindingContext("newPR");
-            var sPath = oContext.getPath();
-            var idx = parseInt(sPath.substring(sPath.lastIndexOf('/') + 1));
-            
-            var oDialog = this.byId("createPRDialog");
-            var oModel = oDialog.getModel("newPR");
-            var aItems = oModel.getProperty("/items");
-            aItems.splice(idx, 1);
-            oModel.setProperty("/items", aItems);
+            PRDialogHelper.deleteItem(oEvent);
         },
 
         onClosePRDialog: function () {
-            this.byId("createPRDialog").close();
+            PRDialogHelper.close(this);
         },
 
         onSubmitPRPress: function () {
-            this.byId("createPRDialog").close();
-            MessageToast.show("Purchase Request submitted successfully.");
+            PRDialogHelper.submit(this);
         },
 
         onSaveDraftPress: function () {
-            this.byId("createPRDialog").close();
-            MessageToast.show("Draft saved.");
+            PRDialogHelper.saveDraft(this);
+        },
+
+        onRequestCreated: function () {
+            var oBinding = this.byId("prTable").getBinding("items");
+            if (oBinding) {
+                oBinding.refresh();
+            }
         }
     });
 });

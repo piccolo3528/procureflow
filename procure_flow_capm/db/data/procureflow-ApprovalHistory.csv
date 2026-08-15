@@ -1,0 +1,8 @@
+ID;request_ID;action;actor_ID;role;comment;fromStatus;toStatus;createdAt
+AH-1;PR-2026-003;Submitted;U6;Employee;;Draft;Pending Manager Approval;2026-07-20T08:15:00Z
+AH-2;PR-2026-003;Approved;U2;Manager;Looks good, approved.;Pending Manager Approval;Pending Finance Approval;2026-07-21T09:00:00Z
+AH-3;PR-2026-003;Approved;U3;Finance;Budget available.;Pending Finance Approval;Pending Procurement;2026-07-22T10:00:00Z
+AH-4;PR-2026-003;VendorSelected;U4;Procurement;Best delivery time.;Pending Procurement;Vendor Selected;2026-07-23T11:00:00Z
+AH-5;PR-2026-003;POGenerated;U4;Procurement;;Vendor Selected;PO Created;2026-07-28T09:00:00Z
+AH-6;PR-2026-004;Submitted;U7;Employee;;Draft;Pending Manager Approval;2026-07-27T14:00:00Z
+AH-7;PR-2026-004;Rejected;U2;Manager;Not aligned with current budget priorities.;Pending Manager Approval;Rejected;2026-07-28T09:30:00Z

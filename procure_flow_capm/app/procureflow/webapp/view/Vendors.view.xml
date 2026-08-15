@@ -2,32 +2,34 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:f="sap.f"
-    xmlns:layout="sap.ui.layout">
-    
+    xmlns:core="sap.ui.core"
+    xmlns:cssgrid="sap.ui.layout.cssgrid">
+
     <Page title="Vendor Management">
         <headerContent>
-            <Button icon="sap-icon://add" text="Onboard Vendor" type="Emphasized" press=".onOnboardPress"/>
+            <SearchField width="220px" liveChange=".onSearch" placeholder="Search vendors..." />
+            <Button icon="sap-icon://add" text="Onboard Vendor" type="Emphasized" press=".onOnboardPress" visible="{= ${ui>/currentUser/role} === 'Procurement' || ${ui>/currentUser/role} === 'Admin' }"/>
         </headerContent>
         <content>
-            <f:GridList id="vendorGrid" items="{mock>/Vendors}" class="sapUiSmallMargin">
+            <f:GridList id="vendorGrid" items="{path: '/Vendors', parameters: {$orderby: 'name asc'}}" class="sapUiSmallMargin" noDataText="No vendors found.">
                 <f:customLayout>
-                    <layout:GridBasicLayout gridTemplateColumns="repeat(auto-fit, minmax(16rem, 1fr))" gridGap="1rem"/>
+                    <cssgrid:GridBasicLayout gridTemplateColumns="repeat(auto-fit, minmax(16rem, 1fr))" gridGap="1rem"/>
                 </f:customLayout>
                 <f:GridListItem type="Active" press=".onVendorPress">
                     <VBox class="sapUiSmallMargin">
                         <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
-                            <Avatar initials="{= ${mock>name}.charAt(0) }" displaySize="S"/>
-                            <ObjectStatus text="{mock>status}" state="{= ${mock>status} === 'Active' ? 'Success' : 'Error'}" inverted="true" />
+                            <Avatar initials="{= ${name}.charAt(0) }" displaySize="S"/>
+                            <ObjectStatus text="{status}" state="{= ${status} === 'Active' ? 'Success' : (${status} === 'Pending' ? 'Warning' : 'Error') }" inverted="true" />
                         </HBox>
-                        <Title text="{mock>name}" level="H3" class="sapUiTinyMarginBottom"/>
-                        <Text text="{mock>category}" class="sapUiSmallMarginBottom" />
-                        
+                        <Title text="{name}" level="H3" class="sapUiTinyMarginBottom"/>
+                        <Text text="{category}" class="sapUiSmallMarginBottom" />
+
                         <HBox justifyContent="SpaceBetween" alignItems="Center">
                             <HBox alignItems="Center">
-                                <core:Icon src="sap-icon://favorite" color="#ffc107" class="sapUiTinyMarginEnd" xmlns:core="sap.ui.core"/>
-                                <Text text="{mock>rating}" />
+                                <core:Icon src="sap-icon://favorite" color="#ffc107" class="sapUiTinyMarginEnd"/>
+                                <Text text="{rating}" />
                             </HBox>
-                            <Text text="Spend: ${mock>spend}" />
+                            <ObjectNumber number="{spend}" unit="USD" />
                         </HBox>
                     </VBox>
                 </f:GridListItem>

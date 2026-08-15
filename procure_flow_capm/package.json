@@ -15,5 +15,19 @@
   "private": true,
   "workspaces": [
     "app/*"
-  ]
+  ],
+  "cds": {
+    "requires": {
+      "auth": {
+        "kind": "mocked",
+        "users": {
+          "U1": { "password": "U1", "roles": ["Employee"] },
+          "U2": { "password": "U2", "roles": ["Manager"] },
+          "U3": { "password": "U3", "roles": ["Finance"] },
+          "U4": { "password": "U4", "roles": ["Procurement"] },
+          "U5": { "password": "U5", "roles": ["Admin"] }
+        }
+      }
+    }
+  }
 }

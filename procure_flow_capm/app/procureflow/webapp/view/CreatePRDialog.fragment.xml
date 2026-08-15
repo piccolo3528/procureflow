@@ -5,64 +5,60 @@
     xmlns:f="sap.ui.layout.form">
     <Dialog id="createPRDialog" title="Create Purchase Request" contentWidth="800px" stretch="{device>/system/phone}">
         <content>
-            <f:SimpleForm editable="true" layout="ColumnLayout" columnsM="2" columnsL="2" columnsXL="2">
+            <f:SimpleForm id="prForm" editable="true" layout="ColumnLayout" columnsM="2" columnsL="2" columnsXL="2">
                 <f:content>
-                    <Label text="Title" required="true" />
-                    <Input value="{newPR>/title}" placeholder="E.g., Q4 Software Licenses" />
-                    
-                    <Label text="Priority" />
-                    <ComboBox selectedKey="{newPR>/priority}">
+                    <Label id="lblTitle" text="Title" required="true" />
+                    <Input id="inpTitle" value="{newPR>/title}" placeholder="E.g., Q4 Software Licenses" />
+
+                    <Label id="lblPriority" text="Priority" />
+                    <ComboBox id="cbPriority" selectedKey="{newPR>/priority}">
                         <core:Item key="Normal" text="Normal" />
                         <core:Item key="High" text="High" />
                         <core:Item key="Low" text="Low" />
                     </ComboBox>
 
-                    <Label text="Department" />
-                    <Input value="{ui>/users/0/dept}" enabled="false" />
+                    <Label id="lblRequiredDate" text="Required Delivery Date" />
+                    <DatePicker id="dpRequiredDate" value="{newPR>/requiredDate}" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd" />
 
-                    <Label text="Expected Delivery Date" />
-                    <DatePicker value="{newPR>/deliveryDate}" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd" />
-
-                    <Label text="Business Justification" required="true" />
-                    <TextArea value="{newPR>/justification}" rows="3" placeholder="Explain why this purchase is necessary..." />
+                    <Label id="lblJustification" text="Business Justification" required="true" />
+                    <TextArea id="taJustification" value="{newPR>/justification}" rows="3" placeholder="Explain why this purchase is necessary..." />
                 </f:content>
             </f:SimpleForm>
 
-            <Panel headerText="Line Items" class="sapUiSmallMargin">
+            <Panel id="itemsPanel" headerText="Line Items" class="sapUiSmallMargin">
                 <headerToolbar>
-                    <OverflowToolbar>
-                        <Title text="Items" />
-                        <ToolbarSpacer />
-                        <Button icon="sap-icon://add" text="Add Item" press=".onAddItemPress" type="Transparent" />
+                    <OverflowToolbar id="itemsToolbar">
+                        <Title id="itemsTitle" text="Items" />
+                        <ToolbarSpacer id="itemsSpacer" />
+                        <Button id="btnAddItem" icon="sap-icon://add" text="Add Item" press=".onAddItemPress" type="Transparent" />
                     </OverflowToolbar>
                 </headerToolbar>
-                <Table items="{newPR>/items}" noDataText="No items added yet.">
+                <Table id="itemsTable" items="{newPR>/items}" noDataText="No items added yet.">
                     <columns>
-                        <Column><Text text="Item Description" /></Column>
-                        <Column width="5rem"><Text text="Qty" /></Column>
-                        <Column width="8rem"><Text text="Price" /></Column>
-                        <Column width="4rem" hAlign="Center"><Text text="" /></Column>
+                        <Column id="colDesc"><Text text="Item Description" /></Column>
+                        <Column id="colCat" width="7rem"><Text text="Category" /></Column>
+                        <Column id="colQty" width="5rem"><Text text="Qty" /></Column>
+                        <Column id="colPrice" width="8rem"><Text text="Unit Price" /></Column>
+                        <Column id="colDel" width="4rem" hAlign="Center"><Text text="" /></Column>
                     </columns>
                     <items>
-                        <ColumnListItem>
+                        <ColumnListItem id="itemRow">
                             <cells>
-                                <Input value="{newPR>description}" placeholder="Item description" />
-                                <Input value="{newPR>qty}" type="Number" />
-                                <Input value="{newPR>price}" type="Number" />
-                                <Button icon="sap-icon://delete" type="Reject" press=".onDeleteItemPress" />
+                                <Input id="inpItemDesc" value="{newPR>description}" placeholder="Item description" />
+                                <Input id="inpItemCat" value="{newPR>category}" placeholder="e.g. Hardware" />
+                                <Input id="inpItemQty" value="{newPR>qty}" type="Number" />
+                                <Input id="inpItemPrice" value="{newPR>price}" type="Number" />
+                                <Button id="btnDeleteItem" icon="sap-icon://delete" type="Reject" press=".onDeleteItemPress" />
                             </cells>
                         </ColumnListItem>
                     </items>
                 </Table>
-                <HBox justifyContent="End" class="sapUiSmallMarginTop">
-                    <Title text="Total: USD (Calculated upon save)" level="H5" />
-                </HBox>
             </Panel>
         </content>
         <buttons>
-            <Button text="Save as Draft" press=".onSaveDraftPress" />
-            <Button text="Submit Request" type="Emphasized" press=".onSubmitPRPress" />
-            <Button text="Cancel" press=".onClosePRDialog" />
+            <Button id="btnSaveDraft" text="Save as Draft" press=".onSaveDraftPress" />
+            <Button id="btnSubmit" text="Submit Request" type="Emphasized" press=".onSubmitPRPress" />
+            <Button id="btnCancel" text="Cancel" press=".onClosePRDialog" />
         </buttons>
     </Dialog>
 </core:FragmentDefinition>

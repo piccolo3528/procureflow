@@ -15,13 +15,13 @@
                 <ToolbarSpacer />
                 <SearchField width="300px" placeholder="Search POs, Requests, Vendors..." />
                 <Button icon="sap-icon://bell" type="Transparent" tooltip="Notifications" />
-                <Button icon="sap-icon://customer" type="Transparent" press=".onProfilePress" tooltip="Profile" text="{ui>/appState/currentUserRole}"/>
+                <Button icon="sap-icon://customer" type="Transparent" press=".onProfilePress" tooltip="Profile" text="{ui>/currentUser/name} ({ui>/currentUser/role})"/>
             </tnt:ToolHeader>
         </tnt:header>
         <tnt:sideContent>
             <tnt:SideNavigation id="sideNavigation" expanded="{ui>/appState/sidebarExpanded}" itemSelect=".onItemSelect">
                 <tnt:NavigationList>
-                    <tnt:NavigationListItem text="Dashboard" icon="sap-icon://bov" key="Dashboard" />
+                    <tnt:NavigationListItem text="Dashboard" icon="sap-icon://home" key="Dashboard" />
                     <tnt:NavigationListGroup text="Procurement">
                         <tnt:NavigationListItem text="Purchase Requests" icon="sap-icon://document-text" key="PurchaseRequests" />
                         <tnt:NavigationListItem text="Approval Center" icon="sap-icon://accept" key="Approvals" />

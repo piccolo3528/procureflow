@@ -42,7 +42,7 @@
     }
   },
   "sap.ui5": {
-    "flexEnabled": true,
+    "flexEnabled": false,
     "dependencies": {
       "minUI5Version": "1.150.0",
       "libs": {
@@ -65,19 +65,8 @@
           "bundleName": "procureflow.i18n.i18n"
         }
       },
-      "mock": {
-        "type": "sap.ui.model.odata.v4.ODataModel",
-        "settings": {
-          "synchronizationMode": "None",
-          "operationMode": "Server",
-          "autoExpandSelect": true,
-          "earlyRequests": true
-        },
-        "dataSource": "mainService"
-      },
       "ui": {
-        "type": "sap.ui.model.json.JSONModel",
-        "uri": "model/mockData.json"
+        "type": "sap.ui.model.json.JSONModel"
       }
     },
     "resources": {

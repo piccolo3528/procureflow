@@ -1,5 +1,9 @@
-ID;name;role;dept;avatar
-U1;Alex Johnson;Employee;IT;https://placehold.co/100x100/0070F2/FFFFFF?text=AJ
-U2;Sarah Chen;Manager;IT;https://placehold.co/100x100/107E3E/FFFFFF?text=SC
-U3;Mike Torres;Finance;Finance;https://placehold.co/100x100/E9730C/FFFFFF?text=MT
-U4;Lisa Ray;Procurement;Operations;https://placehold.co/100x100/BB0000/FFFFFF?text=LR
+ID;name;email;role;active;avatar;department_ID;manager_ID
+U1;Alex Johnson;alex.johnson@procureflow.com;Employee;true;https://placehold.co/100x100/0070F2/FFFFFF?text=AJ;D-IT;U2
+U2;Sarah Chen;sarah.chen@procureflow.com;Manager;true;https://placehold.co/100x100/107E3E/FFFFFF?text=SC;D-IT;
+U3;Mike Torres;mike.torres@procureflow.com;Finance;true;https://placehold.co/100x100/E9730C/FFFFFF?text=MT;D-FIN;
+U4;Lisa Ray;lisa.ray@procureflow.com;Procurement;true;https://placehold.co/100x100/BB0000/FFFFFF?text=LR;D-OPS;
+U5;Amara Okafor;amara.okafor@procureflow.com;Admin;true;https://placehold.co/100x100/5B738B/FFFFFF?text=AO;D-OPS;
+U6;Emily Davis;emily.davis@procureflow.com;Employee;true;https://placehold.co/100x100/8875E7/FFFFFF?text=ED;D-FAC;U2
+U7;Tom Wilson;tom.wilson@procureflow.com;Employee;true;https://placehold.co/100x100/D04343/FFFFFF?text=TW;D-MKT;U2
+U8;John Doe;john.doe@procureflow.com;Procurement;true;https://placehold.co/100x100/2B7D7D/FFFFFF?text=JD;D-OPS;

@@ -1,2 +1,2 @@
-ID;title;vendor;date;amount;currency;status;buyer;prID
-PO-2026-001;Office Furniture Expansion;Steelcase;2026-07-28;8200.00;USD;Issued;Lisa Ray;PR-2026-003
+ID;request_ID;vendor_ID;date;currency;amount;taxAmount;status;buyer_ID;deliveryAddress;paymentTerms
+PO-2026-001;PR-2026-003;V-005;2026-07-28;USD;8200.00;0.00;Issued;U4;500 Facilities Way, Building B;Net 30

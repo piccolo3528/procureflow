@@ -21,16 +21,22 @@
                             <ComboBox id="statusFilter">
                                 <core:Item key="All" text="All Statuses" />
                                 <core:Item key="Draft" text="Draft" />
-                                <core:Item key="Pending Approval" text="Pending Approval" />
-                                <core:Item key="Approved" text="Approved" />
+                                <core:Item key="Pending Manager Approval" text="Pending Manager Approval" />
+                                <core:Item key="Pending Finance Approval" text="Pending Finance Approval" />
+                                <core:Item key="Pending Procurement" text="Pending Procurement" />
+                                <core:Item key="Vendor Selected" text="Vendor Selected" />
                                 <core:Item key="PO Created" text="PO Created" />
+                                <core:Item key="Goods Received" text="Goods Received" />
+                                <core:Item key="Rejected" text="Rejected" />
+                                <core:Item key="Changes Requested" text="Changes Requested" />
+                                <core:Item key="Cancelled" text="Cancelled" />
                             </ComboBox>
                         </fb:control>
                     </fb:FilterGroupItem>
                 </fb:filterGroupItems>
             </fb:FilterBar>
 
-            <Table id="prTable" items="{mock>/PurchaseRequests}" mode="SingleSelectMaster" selectionChange=".onPRSelect">
+            <Table id="prTable" items="{path: '/PurchaseRequests', parameters: {$orderby: 'date desc'}}" mode="SingleSelectMaster" selectionChange=".onPRSelect">
                 <headerToolbar>
                     <OverflowToolbar>
                         <Title text="Items" />
@@ -50,16 +56,16 @@
                 <items>
                     <ColumnListItem type="Navigation">
                         <cells>
-                            <ObjectIdentifier title="{mock>ID}" />
+                            <ObjectIdentifier title="{ID}" />
                             <VBox>
-                                <Text text="{mock>title}" />
-                                <Text text="{mock>department} • {mock>vendor}"/>
+                                <Text text="{title}" />
+                                <Text text="{department/name} • {= ${vendor/name} ? ${vendor/name} : 'No vendor selected'}"/>
                             </VBox>
-                            <ObjectNumber number="{mock>amount}" unit="{mock>currency}" />
-                            <ObjectStatus text="{mock>status}" 
-                                state="{= ${mock>status} === 'Approved' || ${mock>status} === 'PO Created' ? 'Success' : (${mock>status} === 'Pending Approval' ? 'Warning' : (${mock>status} === 'Rejected' ? 'Error' : 'None')) }" />
-                            <Text text="{mock>requestor}" />
-                            <Text text="{mock>date}" />
+                            <ObjectNumber number="{amount}" unit="{currency}" />
+                            <ObjectStatus text="{status}"
+                                state="{= ${status} === 'Goods Received' || ${status} === 'PO Created' ? 'Success' : (${status} === 'Rejected' || ${status} === 'Cancelled' ? 'Error' : (${status} === 'Draft' ? 'None' : 'Warning')) }" />
+                            <Text text="{requestor/name}" />
+                            <Text text="{date}" />
                         </cells>
                     </ColumnListItem>
                 </items>

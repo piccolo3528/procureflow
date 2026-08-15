@@ -1,0 +1,6 @@
+ID;name;budgetAvailable;budgetUsed;manager_ID
+D-IT;IT;200000.00;45000.00;U2
+D-FIN;Finance;150000.00;20000.00;U3
+D-OPS;Operations;100000.00;30000.00;U4
+D-MKT;Marketing;80000.00;60000.00;U2
+D-FAC;Facilities;60000.00;15000.00;U2

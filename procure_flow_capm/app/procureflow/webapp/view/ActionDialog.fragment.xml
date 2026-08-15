@@ -1,0 +1,14 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <Dialog id="actionDialog" title="{actionDlg>/title}" contentWidth="450px">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <Text text="{actionDlg>/message}" class="sapUiSmallMarginBottom"/>
+                <TextArea id="actionComment" value="{actionDlg>/comment}" rows="3" width="100%" placeholder="{actionDlg>/placeholder}"/>
+            </VBox>
+        </content>
+        <buttons>
+            <Button id="actionConfirmBtn" text="{actionDlg>/confirmText}" type="Emphasized" press=".onActionDialogConfirm"/>
+            <Button id="actionCancelBtn" text="Cancel" press=".onActionDialogCancel"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

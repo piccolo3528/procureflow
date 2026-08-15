@@ -1,0 +1,47 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+    <Dialog id="createVendorDialog" title="Onboard Vendor" contentWidth="700px">
+        <content>
+            <f:SimpleForm id="vendorCreateForm" editable="true" layout="ColumnLayout" columnsM="2" columnsL="2" columnsXL="2" class="sapUiSmallMargin">
+                <f:content>
+                    <Label text="Vendor Name" required="true"/>
+                    <Input value="{newVendor>/name}" />
+
+                    <Label text="Category"/>
+                    <Input value="{newVendor>/category}" placeholder="e.g. Hardware"/>
+
+                    <Label text="Type"/>
+                    <Input value="{newVendor>/type}" placeholder="e.g. Manufacturer"/>
+
+                    <Label text="Status"/>
+                    <Select selectedKey="{newVendor>/status}">
+                        <core:Item key="Active" text="Active"/>
+                        <core:Item key="Pending" text="Pending"/>
+                        <core:Item key="Inactive" text="Inactive"/>
+                    </Select>
+
+                    <Label text="Contact Person"/>
+                    <Input value="{newVendor>/contactPerson}" />
+
+                    <Label text="Email"/>
+                    <Input value="{newVendor>/email}" type="Email"/>
+
+                    <Label text="Phone"/>
+                    <Input value="{newVendor>/phone}" />
+
+                    <Label text="Payment Terms"/>
+                    <Input value="{newVendor>/paymentTerms}" placeholder="e.g. Net 30"/>
+
+                    <Label text="Tax / GST ID"/>
+                    <Input value="{newVendor>/taxId}" />
+
+                    <Label text="Address"/>
+                    <Input value="{newVendor>/address}" />
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <buttons>
+            <Button text="Create Vendor" type="Emphasized" press=".onCreateVendorConfirm"/>
+            <Button text="Cancel" press=".onCreateVendorCancel"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

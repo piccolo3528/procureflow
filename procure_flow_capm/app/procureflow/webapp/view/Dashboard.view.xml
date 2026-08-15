@@ -1,51 +1,53 @@
 <mvc:View controllerName="procureflow.controller.Dashboard"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
-    xmlns:layout="sap.ui.layout">
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core">
     <Page title="Dashboard">
         <content>
             <VBox class="sapUiSmallMargin">
                 <MessageStrip
-                    text="Welcome back! Here is what's happening today."
+                    text="{= 'Welcome back, ' + ${ui>/currentUser/name} + '! Here is what is happening today.' }"
                     type="Information"
                     showIcon="true"
                     showCloseButton="true"
                     class="sapUiBottomMargin">
                 </MessageStrip>
 
-                <HBox visible="{= ${ui>/appState/currentUserRole} === 'Employee' }" class="sapUiBottomMargin">
+                <HBox class="sapUiBottomMargin">
                     <Button text="New Request" type="Emphasized" icon="sap-icon://add" press=".onCreatePress" />
                 </HBox>
-                
+
                 <!-- KPIs -->
                 <layout:Grid defaultSpan="XL3 L4 M6 S12" class="sapUiBottomMargin">
-                    <GenericTile header="My Open Requests" subheader="Active" press=".onNavToPR" class="sapUiTinyMargin">
+                    <GenericTile id="myRequestsTile" header="My Open Requests" subheader="Active" press=".onNavToPR" class="sapUiTinyMargin">
                         <TileContent>
-                            <NumericContent value="3" icon="sap-icon://document-text" valueColor="Good"/>
-                        </TileContent>
-                    </GenericTile>
-                    
-                    <GenericTile header="Drafts" subheader="Saved" class="sapUiTinyMargin">
-                        <TileContent>
-                            <NumericContent value="1" icon="sap-icon://edit" valueColor="Neutral"/>
+                            <NumericContent value="{kpi>/myOpenRequests}" icon="sap-icon://document-text" valueColor="Good"/>
                         </TileContent>
                     </GenericTile>
 
-                    <GenericTile header="Recent Deliveries" class="sapUiTinyMargin">
+                    <GenericTile id="draftsTile" header="My Drafts" subheader="Saved" press=".onNavToPR" class="sapUiTinyMargin">
                         <TileContent>
-                            <NumericContent value="2" icon="sap-icon://shipping-status" valueColor="Good"/>
+                            <NumericContent value="{kpi>/myDrafts}" icon="sap-icon://edit" valueColor="Neutral"/>
                         </TileContent>
                     </GenericTile>
-                    
-                    <GenericTile header="Pending Approvals" subheader="Requires action" press=".onNavToApprovals" class="sapUiTinyMargin" visible="{= ${ui>/appState/currentUserRole} === 'Manager' }">
+
+                    <GenericTile id="pendingApprovalTile" header="Pending My Action" subheader="{ui>/currentUser/role}" press=".onNavToApprovals" class="sapUiTinyMargin"
+                        visible="{= ${kpi>/pendingMyAction} !== undefined &amp;&amp; ${ui>/currentUser/role} !== 'Employee' }">
                         <TileContent>
-                            <NumericContent value="{mock>/Metrics('M1')/pendingApprovals}" icon="sap-icon://accept" valueColor="Critical"/>
+                            <NumericContent value="{kpi>/pendingMyAction}" icon="sap-icon://accept" valueColor="Critical"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile id="vendorsTile" header="Active Vendors" subheader="Approved suppliers" class="sapUiTinyMargin">
+                        <TileContent>
+                            <NumericContent value="{kpi>/activeVendors}" icon="sap-icon://supplier" valueColor="Good"/>
                         </TileContent>
                     </GenericTile>
                 </layout:Grid>
 
-                <Title text="Recent Purchase Requests" level="H2" class="sapUiTinyMarginBottom" />
-                <Table items="{ path: 'mock>/PurchaseRequests', length: 4 }" mode="SingleSelectMaster" selectionChange=".onPRSelect">
+                <Title text="My Recent Purchase Requests" level="H2" class="sapUiTinyMarginBottom" />
+                <Table id="recentTable" items="{path: '/PurchaseRequests', parameters: {$orderby: 'date desc'}, length: 5}" mode="SingleSelectMaster" selectionChange=".onPRSelect">
                     <columns>
                         <Column><Text text="Request ID" /></Column>
                         <Column><Text text="Title" /></Column>
@@ -56,12 +58,32 @@
                     <items>
                         <ColumnListItem type="Navigation">
                             <cells>
-                                <ObjectIdentifier title="{mock>ID}" />
-                                <Text text="{mock>title}" />
-                                <ObjectNumber number="{mock>amount}" unit="{mock>currency}" />
-                                <ObjectStatus text="{mock>status}" 
-                                    state="{= ${mock>status} === 'Approved' || ${mock>status} === 'PO Created' ? 'Success' : (${mock>status} === 'Pending Approval' ? 'Warning' : (${mock>status} === 'Rejected' ? 'Error' : 'None')) }" />
-                                <Text text="{mock>date}" />
+                                <ObjectIdentifier title="{ID}" />
+                                <Text text="{title}" />
+                                <ObjectNumber number="{amount}" unit="{currency}" />
+                                <ObjectStatus text="{status}"
+                                    state="{= ${status} === 'Goods Received' || ${status} === 'PO Created' ? 'Success' : (${status} === 'Rejected' || ${status} === 'Cancelled' ? 'Error' : (${status} === 'Draft' ? 'None' : 'Warning')) }" />
+                                <Text text="{date}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+
+                <Title text="Recent Activity" level="H2" class="sapUiTinyMarginBottom sapUiMediumMarginTop" />
+                <Table id="activityTable" items="{path: '/AuditLogs', parameters: {$orderby: 'createdAt desc'}, length: 6}">
+                    <columns>
+                        <Column><Text text="When" /></Column>
+                        <Column><Text text="Who" /></Column>
+                        <Column><Text text="Action" /></Column>
+                        <Column><Text text="Document" /></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Text text="{path: 'createdAt', formatter: '.formatter.relativeDateTime'}" />
+                                <Text text="{user/name}" />
+                                <Text text="{action}" />
+                                <Text text="{businessObject}: {documentID}" />
                             </cells>
                         </ColumnListItem>
                     </items>

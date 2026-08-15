@@ -1,4 +1,4 @@
-<mvc:View controllerName="procureflow.controller.GoodsReceipt"
+<mvc:View controllerName="procureflow.controller.GoodsReceipts"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:layout="sap.ui.layout"
@@ -14,40 +14,34 @@
                     <VBox width="auto">
                         <layoutData><layout:SplitterLayoutData size="30%" resizable="true"/></layoutData>
                         <Title text="Open Purchase Orders" class="sapUiSmallMargin" level="H3"/>
-                        <List id="poList" items="{mock>/PurchaseOrders}" mode="SingleSelectMaster" selectionChange=".onPOSelect">
-                            <StandardListItem 
-                                title="{mock>ID}"
-                                description="{mock>vendor} - {mock>title}"
-                                info="{mock>status}"
+                        <List id="poList" items="{path: '/PurchaseOrders', parameters: {$orderby: 'date asc'}}" mode="SingleSelectMaster" selectionChange=".onPOSelect" noDataText="No open Purchase Orders.">
+                            <StandardListItem
+                                title="{ID}"
+                                description="{vendor/name}"
+                                info="{status}"
                                 type="Active" />
                         </List>
                     </VBox>
                     <VBox id="detailBox" visible="false" class="sapUiSmallMargin">
                         <layoutData><layout:SplitterLayoutData size="auto"/></layoutData>
-                        <ObjectHeader title="Receive against: {mock>ID}" 
-                            number="{mock>amount}" 
-                            numberUnit="{mock>currency}"
-                            intro="{mock>title}">
+                        <ObjectHeader title="{recv>/poId}" number="{recv>/amount}" numberUnit="{recv>/currency}" intro="Receive against Purchase Order">
                             <attributes>
-                                <ObjectAttribute title="Vendor" text="{mock>vendor}"/>
-                                <ObjectAttribute title="Buyer" text="{mock>buyer}"/>
+                                <ObjectAttribute title="PO Number" text="{recv>/poId}"/>
+                                <ObjectAttribute title="Vendor" text="{recv>/vendorName}"/>
                             </attributes>
                         </ObjectHeader>
-                        
-                        <f:SimpleForm editable="true" layout="ColumnLayout" class="sapUiSmallMarginBottom">
+
+                        <f:SimpleForm id="grHeaderForm" editable="true" layout="ColumnLayout" class="sapUiSmallMarginBottom">
                             <f:content>
-                                <Label text="Receiver Name" required="true" />
-                                <Input id="receiverName" value="{ui>/users/0/name}" />
-                                
-                                <Label text="Delivery Note / Receipt" />
-                                <Input id="deliveryNote" placeholder="Enter delivery note number..." />
+                                <Label text="Location" />
+                                <Input id="grLocation" value="{recv>/location}" placeholder="e.g. Main Warehouse"/>
 
                                 <Label text="Notes" />
-                                <TextArea id="grNotes" rows="2" />
+                                <TextArea id="grNotes" value="{recv>/notes}" rows="2" />
                             </f:content>
                         </f:SimpleForm>
 
-                        <Table id="poItemsTable" items="{mock>items}">
+                        <Table id="poItemsTable" items="{recv>/items}">
                             <headerToolbar>
                                 <Toolbar>
                                     <Title text="Line Items to Receive" />
@@ -55,17 +49,21 @@
                             </headerToolbar>
                             <columns>
                                 <Column><Text text="Item" /></Column>
-                                <Column><Text text="Qty Ordered" /></Column>
-                                <Column><Text text="Qty Received" /></Column>
-                                <Column><Text text="Condition" /></Column>
+                                <Column><Text text="Ordered" /></Column>
+                                <Column><Text text="Received So Far" /></Column>
+                                <Column><Text text="Receiving Now" /></Column>
+                                <Column><Text text="Rejecting Now" /></Column>
+                                <Column><Text text="Inspection" /></Column>
                             </columns>
                             <items>
                                 <ColumnListItem>
                                     <cells>
-                                        <Text text="{mock>description}" />
-                                        <Text text="{mock>qty}" />
-                                        <StepInput value="{mock>qty}" min="0" max="{mock>qty}" />
-                                        <ComboBox selectedKey="Good">
+                                        <Text text="{recv>description}" />
+                                        <Text text="{recv>qtyOrdered}" />
+                                        <Text text="{recv>alreadyReceived}" />
+                                        <StepInput value="{recv>qtyReceivedNow}" min="0" max="{recv>remaining}" />
+                                        <StepInput value="{recv>qtyRejectedNow}" min="0" max="{recv>remaining}" />
+                                        <ComboBox selectedKey="{recv>inspectionResult}">
                                             <core:Item key="Good" text="Good" />
                                             <core:Item key="Damaged" text="Damaged" />
                                             <core:Item key="Incomplete" text="Incomplete" />

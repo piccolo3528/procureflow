@@ -1,0 +1,48 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+    <Popover id="vendorDetailPopover" title="{name}" contentWidth="420px">
+        <f:SimpleForm id="vendorDetailForm" editable="true" layout="ColumnLayout" class="sapUiSmallMargin">
+            <f:content>
+                <Label text="Status"/>
+                <Select selectedKey="{status}" enabled="{vpop>/editable}">
+                    <core:Item key="Active" text="Active"/>
+                    <core:Item key="Pending" text="Pending"/>
+                    <core:Item key="Inactive" text="Inactive"/>
+                    <core:Item key="Blocked" text="Blocked"/>
+                </Select>
+
+                <Label text="Category"/>
+                <Input value="{category}" editable="{vpop>/editable}"/>
+
+                <Label text="Type"/>
+                <Input value="{type}" editable="{vpop>/editable}"/>
+
+                <Label text="Contact Person"/>
+                <Input value="{contactPerson}" editable="{vpop>/editable}"/>
+
+                <Label text="Email"/>
+                <Input value="{email}" editable="{vpop>/editable}"/>
+
+                <Label text="Phone"/>
+                <Input value="{phone}" editable="{vpop>/editable}"/>
+
+                <Label text="Payment Terms"/>
+                <Input value="{paymentTerms}" editable="{vpop>/editable}"/>
+
+                <Label text="Tax / GST ID"/>
+                <Input value="{taxId}" editable="{vpop>/editable}"/>
+
+                <Label text="Address"/>
+                <Input value="{address}" editable="{vpop>/editable}"/>
+
+                <Label text="Rating"/>
+                <Text text="{rating}"/>
+
+                <Label text="Performance Score"/>
+                <Text text="{= ${performanceScore} + '%'}"/>
+
+                <Label text="Total Spend"/>
+                <ObjectNumber number="{spend}" unit="USD"/>
+            </f:content>
+        </f:SimpleForm>
+    </Popover>
+</core:FragmentDefinition>

@@ -5,33 +5,34 @@
     xmlns:layout="sap.ui.layout">
     <Page title="Reports &amp; Analytics" showNavButton="true" navButtonPress=".onNavBack">
         <content>
+            <MessageStrip text="Full analytical reporting (charts, filters, export) is planned for a later phase. These figures are live counts from the backend." type="Information" showIcon="true" class="sapUiSmallMargin"/>
             <layout:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSmallMargin">
-                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Total Spend" subheader="YTD" press="onPress">
+                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Total Requests" subheader="All time">
                     <tileContent>
-                        <TileContent footer="Current Quarter">
-                            <mc:NumericContent value="{mock>/Metrics('M1')/totalSpend}" valueColor="Good" indicator="Up" />
+                        <TileContent footer="Purchase Requests">
+                            <NumericContent value="{kpi>/totalRequests}" valueColor="Good" />
                         </TileContent>
                     </tileContent>
                 </GenericTile>
 
-                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Pending Approvals" subheader="Require Action">
+                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Pending Approvals" subheader="Across all stages">
                     <tileContent>
                         <TileContent>
-                            <mc:NumericContent value="{mock>/Metrics('M1')/pendingApprovals}" valueColor="Critical" />
+                            <NumericContent value="{kpi>/pendingApprovals}" valueColor="Critical" />
                         </TileContent>
                     </tileContent>
                 </GenericTile>
 
-                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Budget Utilization" subheader="IT Department">
+                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Active Purchase Orders" subheader="Issued or partially received">
                     <tileContent>
-                        <TileContent footer="Warning at 80%">
-                            <mc:RadialMicroChart size="Responsive" percentage="{mock>/Metrics('M1')/budgetUtilization}" valueColor="Critical"/>
+                        <TileContent footer="Not yet closed">
+                            <NumericContent value="{kpi>/activePOs}" valueColor="Neutral"/>
                         </TileContent>
                     </tileContent>
                 </GenericTile>
             </layout:Grid>
             <Panel headerText="Spend by Vendor" class="sapUiSmallMargin">
-                <Table items="{mock>/Vendors}">
+                <Table items="{path: '/Vendors', parameters: {$orderby: 'spend desc'}}">
                     <columns>
                         <Column><Text text="Vendor" /></Column>
                         <Column><Text text="Category" /></Column>
@@ -40,9 +41,9 @@
                     <items>
                         <ColumnListItem>
                             <cells>
-                                <Text text="{mock>name}" />
-                                <Text text="{mock>category}" />
-                                <ObjectNumber number="{mock>spend}" unit="USD" />
+                                <Text text="{name}" />
+                                <Text text="{category}" />
+                                <ObjectNumber number="{spend}" unit="USD" />
                             </cells>
                         </ColumnListItem>
                     </items>
