@@ -13,7 +13,7 @@
                         <List id="approvalList" items="{path: '/PurchaseRequests', parameters: {$orderby: 'date asc'}}" mode="SingleSelectMaster" selectionChange=".onListSelect" noDataText="Nothing pending your action right now.">
                             <StandardListItem
                                 title="{title}"
-                                description="{ID} - {requestor/name}"
+                                description="{ID} - {requestor/name} - {status}"
                                 info="{amount} {currency}"
                                 type="Active" />
                         </List>
@@ -28,6 +28,7 @@
                                 <ObjectAttribute title="Requestor" text="{requestor/name}"/>
                                 <ObjectAttribute title="Department" text="{department/name}"/>
                                 <ObjectAttribute title="Date" text="{date}"/>
+                                <ObjectAttribute title="Approval Route" text="{path: 'approvalRoute', formatter: '.formatter.approvalRoute'}"/>
                             </attributes>
                         </ObjectHeader>
 

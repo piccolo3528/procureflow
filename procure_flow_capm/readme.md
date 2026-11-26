@@ -1,22 +1,18 @@
-# Getting Started
+# ProcureFlow — CAP application
 
-Welcome to your new CAP project.
+See the [root README](../README.md) for the full description.
 
-It contains these folders and files, following our recommended project layout:
+```bash
+npm install
+npx cds watch          # http://localhost:4004/procureflow/webapp/index.html (demo users U1..U5, password = user id)
+npm test               # end-to-end API tests
+mbt build && cf deploy mta_archives/*.mtar   # SAP BTP Cloud Foundry
+```
 
-File or Folder | Purpose
----------|----------
-`app/` | content for UI frontends goes here
-`db/` | your domain models and data go here
-`srv/` | your service models and code go here
-`readme.md` | this getting started guide
-
-## Next Steps
-
-- Open a new terminal and run `cds watch`
-- (in VS Code simply choose _**Terminal** > Run Task > cds watch_)
-- Start with your domain model, in a CDS file in `db/`
-
-## Learn More
-
-Learn more at <https://cap.cloud.sap>.
+| Folder | Content |
+|---|---|
+| `db/` | CDS domain model + CSV seed data |
+| `srv/` | OData V4 service + business logic (approval matrix, budget, 3-way match, payments) |
+| `app/procureflow/` | SAPUI5 freestyle Fiori app |
+| `app/router/` | SAP Application Router (XSUAA) |
+| `test/` | `node --test` end-to-end tests |

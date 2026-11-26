@@ -1,0 +1,159 @@
+<mvc:View controllerName="procureflow.controller.Invoices"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core">
+    <Page title="Invoices &amp; Payments" showNavButton="true" navButtonPress=".onNavBack">
+        <headerContent>
+            <Button text="Post Invoice" icon="sap-icon://add-document" type="Emphasized" press=".onPostInvoicePress"
+                visible="{= ${ui>/currentUser/role} === 'Finance' || ${ui>/currentUser/role} === 'Admin' }"/>
+        </headerContent>
+        <content>
+            <IllustratedMessage id="noAccessPage" illustrationType="sapIllus-UnableToLoad" enableVerticalResponsiveness="true"
+                title="Accounts Payable is restricted" description="Invoices and payments are only visible to Finance, Procurement and Admin users."
+                visible="{= ${ui>/currentUser/role} === 'Employee' || ${ui>/currentUser/role} === 'Manager' }"/>
+
+            <IconTabBar id="apTabs" expandable="false" stretchContentHeight="true" applyContentPadding="false" class="sapUiResponsiveContentPadding"
+                visible="{= ${ui>/currentUser/role} !== 'Employee' &amp;&amp; ${ui>/currentUser/role} !== 'Manager' }">
+                <items>
+                    <IconTabFilter key="invoices" text="Invoice Verification" icon="sap-icon://receipt">
+                        <layout:Splitter height="100%">
+                            <layout:contentAreas>
+                                <VBox width="auto">
+                                    <layoutData><layout:SplitterLayoutData size="35%" resizable="true"/></layoutData>
+                                    <SegmentedButton id="invoiceFilter" selectedKey="All" selectionChange=".onInvoiceFilterChange" class="sapUiTinyMargin">
+                                        <items>
+                                            <SegmentedButtonItem key="All" text="All"/>
+                                            <SegmentedButtonItem key="Blocked" text="Blocked"/>
+                                            <SegmentedButtonItem key="Payment Pending" text="To Pay"/>
+                                            <SegmentedButtonItem key="Paid" text="Paid"/>
+                                        </items>
+                                    </SegmentedButton>
+                                    <List id="invoiceList" mode="SingleSelectMaster" selectionChange=".onInvoiceSelect"
+                                        items="{path: '/Invoices', parameters: {$orderby: 'createdAt desc'}, suspended: true}"
+                                        noDataText="No invoices yet. Post one against a received Purchase Order.">
+                                        <ObjectListItem title="{ID}" number="{amount}" numberUnit="{currency}" type="Active">
+                                            <firstStatus>
+                                                <ObjectStatus text="{status}" state="{path: 'status', formatter: '.formatter.invoiceStatusState'}"/>
+                                            </firstStatus>
+                                            <attributes>
+                                                <ObjectAttribute text="{vendor/name}"/>
+                                                <ObjectAttribute text="{purchaseOrder_ID} · {vendorInvoiceNo}"/>
+                                            </attributes>
+                                        </ObjectListItem>
+                                    </List>
+                                </VBox>
+                                <VBox id="invoiceDetail" visible="false" class="sapUiSmallMargin">
+                                    <layoutData><layout:SplitterLayoutData size="auto"/></layoutData>
+                                    <ObjectHeader title="{vendorInvoiceNo}" intro="{ID}" number="{amount}" numberUnit="{currency}" responsive="true">
+                                        <statuses>
+                                            <ObjectStatus text="{status}" state="{path: 'status', formatter: '.formatter.invoiceStatusState'}"/>
+                                        </statuses>
+                                        <attributes>
+                                            <ObjectAttribute title="Vendor" text="{vendor/name}"/>
+                                            <ObjectAttribute title="Purchase Order" text="{purchaseOrder_ID}"/>
+                                            <ObjectAttribute title="Invoice Date" text="{invoiceDate}"/>
+                                            <ObjectAttribute title="Due Date" text="{dueDate}"/>
+                                            <ObjectAttribute title="Posted By" text="{postedBy/name}"/>
+                                        </attributes>
+                                    </ObjectHeader>
+
+                                    <MessageStrip text="{blockReason}" showIcon="true" class="sapUiSmallMarginBottom"
+                                        type="{= ${status} === 'Blocked' ? 'Error' : 'Warning' }" visible="{= !!${blockReason} }"/>
+                                    <MessageStrip text="{= 'Resolution: ' + ${resolutionNote} }" showIcon="true" type="Information"
+                                        class="sapUiSmallMarginBottom" visible="{= !!${resolutionNote} }"/>
+
+                                    <Panel headerText="3-Way Match (PO ↔ Goods Receipt ↔ Invoice)">
+                                        <HBox wrap="Wrap" class="sapUiSmallMarginBottom">
+                                            <VBox class="sapUiMediumMarginEnd">
+                                                <Label text="Expected (qty × PO price)"/>
+                                                <ObjectNumber number="{expectedAmount}" unit="{currency}"/>
+                                            </VBox>
+                                            <VBox class="sapUiMediumMarginEnd">
+                                                <Label text="Invoiced (net)"/>
+                                                <ObjectNumber number="{netAmount}" unit="{currency}"/>
+                                            </VBox>
+                                            <VBox class="sapUiMediumMarginEnd">
+                                                <Label text="Variance"/>
+                                                <ObjectNumber number="{variance}" unit="{currency}" state="{= ${variance} > 0 ? 'Warning' : 'Success' }"/>
+                                            </VBox>
+                                            <VBox>
+                                                <Label text="Tax"/>
+                                                <ObjectNumber number="{taxAmount}" unit="{currency}"/>
+                                            </VBox>
+                                        </HBox>
+                                        <Table id="invoiceItemsTable" items="{items}">
+                                            <columns>
+                                                <Column><Text text="Item"/></Column>
+                                                <Column hAlign="End"><Text text="Invoiced Qty"/></Column>
+                                                <Column hAlign="End"><Text text="Billable (GR)"/></Column>
+                                                <Column hAlign="End"><Text text="Invoice Price"/></Column>
+                                                <Column hAlign="End"><Text text="PO Price"/></Column>
+                                                <Column><Text text="Match"/></Column>
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem>
+                                                    <cells>
+                                                        <Text text="{description}"/>
+                                                        <Text text="{qty}"/>
+                                                        <Text text="{qtyBillable}"/>
+                                                        <ObjectNumber number="{price}"/>
+                                                        <ObjectNumber number="{poPrice}"/>
+                                                        <ObjectStatus text="{matchStatus}" state="{path: 'matchStatus', formatter: '.formatter.matchState'}"/>
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                    </Panel>
+
+                                    <Panel headerText="Payments" visible="{= ${status} === 'Paid' }">
+                                        <List items="{payments}">
+                                            <StandardListItem title="{ID} · {method}" description="Reference {reference}" info="{amount} {currency} on {clearingDate}"/>
+                                        </List>
+                                    </Panel>
+
+                                    <OverflowToolbar class="sapUiSmallMarginTop" visible="{= ${ui>/currentUser/role} === 'Finance' || ${ui>/currentUser/role} === 'Admin' }">
+                                        <ToolbarSpacer/>
+                                        <Button text="Reject Invoice" type="Reject" press=".onRejectInvoicePress"
+                                            visible="{= ${status} === 'Blocked' || ${status} === 'Payment Pending' }"/>
+                                        <Button text="Release Block" press=".onReleaseBlockPress" visible="{= ${status} === 'Blocked' }"/>
+                                        <Button text="Pay" type="Accept" icon="sap-icon://money-bills" press=".onPayPress" visible="{= ${status} === 'Payment Pending' }"/>
+                                    </OverflowToolbar>
+                                </VBox>
+                            </layout:contentAreas>
+                        </layout:Splitter>
+                    </IconTabFilter>
+
+                    <IconTabFilter key="payments" text="Payments" icon="sap-icon://payment-approval">
+                        <Table id="paymentsTable" items="{path: '/Payments', parameters: {$orderby: 'createdAt desc'}, suspended: true}" noDataText="No payments yet.">
+                            <columns>
+                                <Column><Text text="Payment"/></Column>
+                                <Column><Text text="Invoice"/></Column>
+                                <Column><Text text="Vendor"/></Column>
+                                <Column><Text text="Method"/></Column>
+                                <Column><Text text="Reference"/></Column>
+                                <Column><Text text="Clearing Date"/></Column>
+                                <Column hAlign="End"><Text text="Amount"/></Column>
+                                <Column><Text text="Status"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <ObjectIdentifier title="{ID}"/>
+                                        <Text text="{invoice_ID}"/>
+                                        <Text text="{vendor/name}"/>
+                                        <Text text="{method}"/>
+                                        <Text text="{reference}"/>
+                                        <Text text="{clearingDate}"/>
+                                        <ObjectNumber number="{amount}" unit="{currency}"/>
+                                        <ObjectStatus text="{status}" state="{= ${status} === 'Paid' ? 'Success' : 'Error' }"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+    </Page>
+</mvc:View>

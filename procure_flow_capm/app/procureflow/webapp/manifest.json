@@ -5,7 +5,7 @@
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
-      "version": "0.0.1"
+      "version": "1.0.0"
     },
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
@@ -92,47 +92,72 @@
         {
           "name": "Dashboard",
           "pattern": "",
-          "target": ["Dashboard"]
+          "target": [
+            "Dashboard"
+          ]
         },
         {
           "name": "PurchaseRequests",
           "pattern": "pr",
-          "target": ["PurchaseRequests"]
+          "target": [
+            "PurchaseRequests"
+          ]
         },
         {
           "name": "PRDetail",
           "pattern": "pr/{id}",
-          "target": ["PRDetail"]
+          "target": [
+            "PRDetail"
+          ]
         },
         {
           "name": "Approvals",
           "pattern": "approvals",
-          "target": ["Approvals"]
+          "target": [
+            "Approvals"
+          ]
         },
         {
           "name": "Vendors",
           "pattern": "vendors",
-          "target": ["Vendors"]
+          "target": [
+            "Vendors"
+          ]
         },
         {
           "name": "PurchaseOrders",
           "pattern": "po",
-          "target": ["PurchaseOrders"]
+          "target": [
+            "PurchaseOrders"
+          ]
         },
         {
           "name": "GoodsReceipts",
           "pattern": "gr",
-          "target": ["GoodsReceipts"]
+          "target": [
+            "GoodsReceipts"
+          ]
+        },
+        {
+          "name": "Invoices",
+          "pattern": "invoices",
+          "target": [
+            "Invoices"
+          ]
         },
         {
           "name": "Reports",
           "pattern": "reports",
-          "target": ["Reports"]
+          "target": [
+            "Reports"
+          ]
         },
         {
           "name": "Settings",
           "pattern": "settings",
-          "target": ["Settings"]
+          "target": [
+            "Settings"
+          ]
         }
       ],
       "targets": {
@@ -171,6 +196,10 @@
         "Settings": {
           "id": "Settings",
           "name": "Settings"
+        },
+        "Invoices": {
+          "id": "Invoices",
+          "name": "Invoices"
         }
       }
     },

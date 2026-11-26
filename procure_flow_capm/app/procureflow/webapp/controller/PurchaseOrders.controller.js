@@ -5,12 +5,25 @@ sap.ui.define([
     "sap/ui/core/routing/History",
     "sap/m/MessageToast",
     "sap/m/MessageBox",
-    "../model/actions"
-], function (Controller, Filter, FilterOperator, History, MessageToast, MessageBox, actions) {
+    "../model/actions",
+    "../model/formatter",
+    "../model/csv"
+], function (Controller, Filter, FilterOperator, History, MessageToast, MessageBox, actions, formatter, csv) {
     "use strict";
 
     return Controller.extend("procureflow.controller.PurchaseOrders", {
+        formatter: formatter,
+
         onInit: function () {
+        },
+
+        onExport: function () {
+            csv.downloadBinding(this.byId("poTable").getBinding("items"), "purchase-orders.csv", [
+                { label: "PO Number", path: "ID" }, { label: "Purchase Request", path: "request_ID" },
+                { label: "Vendor", path: "vendor/name" }, { label: "Amount", path: "amount" },
+                { label: "Currency", path: "currency" }, { label: "Status", path: "status" },
+                { label: "Buyer", path: "buyer/name" }, { label: "Date", path: "date" }
+            ]);
         },
 
         onNavBack: function () {

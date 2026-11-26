@@ -4,15 +4,16 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/ui/model/json/JSONModel",
     "./PRDialogHelper",
-    "../model/formatter"
-], function (Controller, Filter, FilterOperator, JSONModel, PRDialogHelper, formatter) {
+    "../model/formatter",
+    "../model/actions"
+], function (Controller, Filter, FilterOperator, JSONModel, PRDialogHelper, formatter, actions) {
     "use strict";
 
     var PENDING_STATUS_BY_ROLE = {
         Manager: ["Pending Manager Approval"],
         Finance: ["Pending Finance Approval"],
-        Procurement: ["Pending Procurement"],
-        Admin: ["Pending Manager Approval", "Pending Finance Approval", "Pending Procurement"]
+        Procurement: ["Pending Head Approval", "Pending Procurement", "Vendor Selected"],
+        Admin: ["Pending Manager Approval", "Pending Finance Approval", "Pending Head Approval", "Pending Procurement"]
     };
 
     return Controller.extend("procureflow.controller.Dashboard", {
@@ -23,7 +24,8 @@ sap.ui.define([
                 myOpenRequests: 0,
                 myDrafts: 0,
                 pendingMyAction: 0,
-                activeVendors: 0
+                activeVendors: 0,
+                analytics: null
             }), "kpi");
             this.getOwnerComponent().getRouter().getRoute("Dashboard").attachPatternMatched(this._onRouteMatched, this);
         },
@@ -34,8 +36,9 @@ sap.ui.define([
 
         _count: function (sPath, aFilters) {
             var oModel = this.getOwnerComponent().getModel();
-            var oBinding = oModel.bindList(sPath, undefined, undefined, aFilters, { $count: true });
-            return oBinding.getHeaderContext().requestProperty("$count");
+            var oBinding = oModel.bindList(sPath, undefined, undefined, aFilters, { $count: true, $select: "ID" });
+            // requesting a single row makes the binding fetch $count along with it
+            return oBinding.requestContexts(0, 1).then(function () { return oBinding.getCount() || 0; });
         },
 
         _refreshKpis: function () {
@@ -59,6 +62,14 @@ sap.ui.define([
                 ]).then(function (n) { oKpiModel.setProperty("/pendingMyAction", n); });
             } else {
                 oKpiModel.setProperty("/pendingMyAction", 0);
+            }
+
+            // enterprise KPIs (spend, budget, cycle time) - not available to plain employees
+            oKpiModel.setProperty("/analytics", null);
+            if (oUser.role !== "Employee") {
+                actions.callOperation(this.getOwnerComponent().getModel(), "/analytics")
+                    .then(function (oResult) { oKpiModel.setProperty("/analytics", oResult); })
+                    .catch(function () { /* KPI row simply stays hidden */ });
             }
 
             this._count("/Vendors", [new Filter("status", FilterOperator.EQ, "Active")])

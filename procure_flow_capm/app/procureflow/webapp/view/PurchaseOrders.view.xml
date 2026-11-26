@@ -5,7 +5,7 @@
     xmlns:core="sap.ui.core">
     <Page title="Purchase Orders" showNavButton="true" navButtonPress=".onNavBack">
         <headerContent>
-            <Button icon="sap-icon://export" text="Export" />
+            <Button icon="sap-icon://excel-attachment" text="Export" press=".onExport" />
         </headerContent>
         <content>
             <fb:FilterBar id="filterBar" search=".onSearch" showClearOnFB="true" clear=".onClear">
@@ -55,10 +55,11 @@
                             <Text text="{vendor/name}"/>
                             <ObjectNumber number="{amount}" unit="{currency}" />
                             <ObjectStatus text="{status}"
-                                state="{= ${status} === 'Closed' ? 'Success' : (${status} === 'Cancelled' ? 'Error' : (${status} === 'Issued' ? 'Information' : 'Warning')) }" />
+                                state="{path: 'status', formatter: '.formatter.poStatusState'}" />
                             <Text text="{buyer/name}" />
                             <Text text="{date}" />
-                            <Button text="Cancel" type="Transparent" press=".onCancelPOPress"/>
+                            <Button text="Cancel" type="Transparent" press=".onCancelPOPress"
+                                visible="{= (${status} === 'Issued' || ${status} === 'Partially Received') &amp;&amp; (${ui>/currentUser/role} === 'Procurement' || ${ui>/currentUser/role} === 'Admin') }"/>
                         </cells>
                     </ColumnListItem>
                 </items>

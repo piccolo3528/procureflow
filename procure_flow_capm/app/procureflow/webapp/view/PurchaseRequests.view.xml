@@ -5,7 +5,7 @@
     xmlns:core="sap.ui.core">
     <Page title="Purchase Requests" showNavButton="true" navButtonPress=".onNavBack">
         <headerContent>
-            <Button icon="sap-icon://export" text="Export" />
+            <Button icon="sap-icon://excel-attachment" text="Export" press=".onExport" />
             <Button icon="sap-icon://add" text="Create" type="Emphasized" press=".onCreatePress" />
         </headerContent>
         <content>
@@ -23,10 +23,13 @@
                                 <core:Item key="Draft" text="Draft" />
                                 <core:Item key="Pending Manager Approval" text="Pending Manager Approval" />
                                 <core:Item key="Pending Finance Approval" text="Pending Finance Approval" />
+                                <core:Item key="Pending Head Approval" text="Pending Procurement Head Approval" />
                                 <core:Item key="Pending Procurement" text="Pending Procurement" />
                                 <core:Item key="Vendor Selected" text="Vendor Selected" />
                                 <core:Item key="PO Created" text="PO Created" />
+                                <core:Item key="Partially Received" text="Partially Received" />
                                 <core:Item key="Goods Received" text="Goods Received" />
+                                <core:Item key="Completed" text="Completed" />
                                 <core:Item key="Rejected" text="Rejected" />
                                 <core:Item key="Changes Requested" text="Changes Requested" />
                                 <core:Item key="Cancelled" text="Cancelled" />
@@ -63,7 +66,7 @@
                             </VBox>
                             <ObjectNumber number="{amount}" unit="{currency}" />
                             <ObjectStatus text="{status}"
-                                state="{= ${status} === 'Goods Received' || ${status} === 'PO Created' ? 'Success' : (${status} === 'Rejected' || ${status} === 'Cancelled' ? 'Error' : (${status} === 'Draft' ? 'None' : 'Warning')) }" />
+                                state="{path: 'status', formatter: '.formatter.prStatusState'}" />
                             <Text text="{requestor/name}" />
                             <Text text="{date}" />
                         </cells>

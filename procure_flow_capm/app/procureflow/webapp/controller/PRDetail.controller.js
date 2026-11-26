@@ -13,7 +13,13 @@ sap.ui.define([
     "use strict";
 
     var DRAFT_LIKE = ["Draft", "Changes Requested"];
-    var CANCELLABLE = ["Draft", "Pending Manager Approval", "Pending Finance Approval", "Changes Requested"];
+    var CANCELLABLE = ["Draft", "Pending Manager Approval", "Pending Finance Approval", "Pending Head Approval", "Changes Requested"];
+    // approval status -> role that acts on it (mirrors STAGES in srv/service.js)
+    var STAGE_ROLE = {
+        "Pending Manager Approval": "Manager",
+        "Pending Finance Approval": "Finance",
+        "Pending Head Approval": "Procurement"
+    };
 
     return Controller.extend("procureflow.controller.PRDetail", {
         formatter: formatter,
@@ -46,9 +52,8 @@ sap.ui.define([
                 var oUser = this.getOwnerComponent().getModel("ui").getProperty("/currentUser");
                 var bIsRequestor = oData.requestor_ID === oUser.id;
                 var bDraftLike = DRAFT_LIKE.indexOf(oData.status) !== -1;
-                var bManagerStage = oData.status === "Pending Manager Approval" && (oUser.role === "Manager" || oUser.role === "Admin");
-                var bFinanceStage = oData.status === "Pending Finance Approval" && (oUser.role === "Finance" || oUser.role === "Admin");
-                var bCanAct = (bManagerStage || bFinanceStage) && !bIsRequestor;
+                var sStageRole = STAGE_ROLE[oData.status];
+                var bCanAct = !!sStageRole && (oUser.role === sStageRole || oUser.role === "Admin") && !bIsRequestor;
 
                 this._pageState.setData({
                     canEditItems: bIsRequestor && bDraftLike,

@@ -1,0 +1,2 @@
+ID;managerOnlyLimit;headApprovalLimit;invoiceTolerancePct;invoiceToleranceAbs;grOverDeliveryPct;approvalSlaDays;defaultCurrency
+default;1000.00;10000.00;5.00;100.00;0.00;3;USD

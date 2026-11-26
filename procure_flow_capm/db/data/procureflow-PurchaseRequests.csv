@@ -1,6 +1,6 @@
-ID;title;requestor_ID;department_ID;date;requiredDate;submittedAt;amount;currency;status;priority;vendor_ID;justification;cancelReason
-PR-2026-001;MacBook Pro M3 for New Hires;U1;D-IT;2026-07-25;2026-08-15;2026-07-25T09:00:00Z;14500.00;USD;Pending Manager Approval;High;;Required for the new cohort of developers joining next month. Devices need to be provisioned before the 15th.;
-PR-2026-002;Q3 Cloud Hosting AWS;U2;D-IT;2026-07-26;2026-08-01;2026-07-26T10:30:00Z;25000.00;USD;Pending Finance Approval;Medium;V-002;Quarterly AWS spend for production workloads.;
-PR-2026-003;Office Furniture Expansion;U6;D-FAC;2026-07-20;2026-08-05;2026-07-20T08:15:00Z;8200.00;USD;PO Created;Low;V-005;New desks and chairs for the Facilities expansion.;
-PR-2026-004;Marketing Agency Retainer;U7;D-MKT;2026-07-27;2026-08-10;2026-07-27T14:00:00Z;50000.00;USD;Rejected;High;;Monthly retainer for the Q3 campaign.;
-PR-2026-005;Developer Conference Tickets;U1;D-IT;2026-07-27;;;3500.00;USD;Draft;Medium;;Tickets for the team to attend the annual developer conference.;
+ID;title;requestor_ID;department_ID;date;requiredDate;submittedAt;amount;currency;status;priority;vendor_ID;justification;cancelReason;approvalRoute;budgetCommitted
+PR-2026-001;MacBook Pro M3 for New Hires;U1;D-IT;2026-07-25;2026-08-15;2026-07-25T09:00:00Z;14500.00;USD;Pending Manager Approval;High;;Required for the new cohort of developers joining next month. Devices need to be provisioned before the 15th.;;Manager>Finance>Head;false
+PR-2026-002;Q3 Cloud Hosting AWS;U2;D-IT;2026-07-26;2026-08-01;2026-07-26T10:30:00Z;25000.00;USD;Pending Finance Approval;Medium;V-002;Quarterly AWS spend for production workloads.;;Manager>Finance>Head;false
+PR-2026-003;Office Furniture Expansion;U6;D-FAC;2026-07-20;2026-08-05;2026-07-20T08:15:00Z;8200.00;USD;Partially Received;Low;V-005;New desks and chairs for the Facilities expansion.;;Manager>Finance;true
+PR-2026-004;Marketing Agency Retainer;U7;D-MKT;2026-07-27;2026-08-10;2026-07-27T14:00:00Z;50000.00;USD;Rejected;High;;Monthly retainer for the Q3 campaign.;;Manager>Finance>Head;false
+PR-2026-005;Developer Conference Tickets;U1;D-IT;2026-07-27;;;3500.00;USD;Draft;Medium;;Tickets for the team to attend the annual developer conference.;;;false

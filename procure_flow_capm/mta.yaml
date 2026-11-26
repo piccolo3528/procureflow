@@ -1,0 +1,103 @@
+_schema-version: 3.3.0
+ID: procure_flow_capm
+version: 1.0.0
+description: "ProcureFlow - enterprise Procure-to-Pay on SAP BTP (CAP + SAPUI5 + HANA Cloud + XSUAA)"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+        # the approuter serves the SAPUI5 app from app/router/resources (UI5 runtime itself comes from the CDN)
+        - node -e "require('fs').cpSync('app/procureflow/webapp','app/router/resources/procureflow',{recursive:true})"
+modules:
+  - name: procure_flow_capm-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      instances: 1
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: procure_flow_capm-auth
+      - name: procure_flow_capm-db
+
+  - name: procure_flow_capm-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: procure_flow_capm-db
+  - name: procure_flow_capm
+    type: approuter.nodejs
+    path: app/router
+    parameters:
+      keep-existing-routes: true
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api # must be used in xs-app.json as well
+          url: ~{srv-url}
+          forwardAuthToken: true
+      - name: procure_flow_capm-auth
+    provides:
+      - name: app-api
+        properties:
+          app-protocol: ${protocol}
+          app-uri: ${default-uri}
+
+resources:
+  - name: procure_flow_capm-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: procure_flow_capm-${org}-${space}
+        tenant-mode: dedicated
+        oauth2-configuration:
+          credential-types:
+            - "binding-secret"
+            - "x509"
+          redirect-uris:
+            - https://*~{app-api/app-uri}/**
+        role-collections:
+          - name: 'Manager (procure_flow_capm ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Manager'
+          - name: 'Finance (procure_flow_capm ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Finance'
+          - name: 'Procurement (procure_flow_capm ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Procurement'
+          - name: 'Admin (procure_flow_capm ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Admin'
+          - name: 'Employee (procure_flow_capm ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Employee'
+    requires:
+      - name: app-api
+  - name: procure_flow_capm-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared

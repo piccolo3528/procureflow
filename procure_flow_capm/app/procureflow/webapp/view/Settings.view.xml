@@ -3,43 +3,116 @@
     xmlns="sap.m"
     xmlns:f="sap.ui.layout.form"
     xmlns:core="sap.ui.core">
-    <Page title="System Settings" showNavButton="true" navButtonPress=".onNavBack">
+    <Page title="System Settings" showNavButton="true" navButtonPress=".onNavBack" showFooter="{= ${ui>/currentUser/role} === 'Admin' || ${ui>/currentUser/role} === 'Finance' }">
         <content>
-            <f:SimpleForm editable="true" layout="ColumnLayout" title="User Preferences" class="sapUiSmallMargin">
-                <f:content>
-                    <Label text="Theme" />
-                    <ComboBox selectedKey="sap_horizon">
-                        <core:Item key="sap_horizon" text="SAP Horizon (Light)" />
-                        <core:Item key="sap_horizon_dark" text="SAP Horizon (Dark)" />
-                    </ComboBox>
+            <IconTabBar id="settingsTabs" expandable="false" class="sapUiResponsiveContentPadding">
+                <items>
+                    <IconTabFilter key="matrix" text="Approval Matrix &amp; Tolerances" icon="sap-icon://process">
+                        <MessageStrip showIcon="true" type="Information" class="sapUiSmallMarginBottom"
+                            text="{= 'Requests up to ' + ${managerOnlyLimit} + ' need Manager approval only; up to ' + ${headApprovalLimit} + ' go Manager → Finance; above that Manager → Finance → Procurement Head. Changes apply to requests submitted afterwards.' }"/>
+                        <f:SimpleForm id="settingsForm" editable="true" layout="ColumnLayout" columnsM="2" columnsL="2" columnsXL="2">
+                            <f:content>
+                                <core:Title text="Approval Matrix"/>
+                                <Label text="Manager-only limit"/>
+                                <Input value="{managerOnlyLimit}" type="Number" description="USD" editable="{= ${ui>/currentUser/role} === 'Admin' }"/>
+                                <Label text="Procurement Head above"/>
+                                <Input value="{headApprovalLimit}" type="Number" description="USD" editable="{= ${ui>/currentUser/role} === 'Admin' }"/>
+                                <Label text="Approval SLA"/>
+                                <Input value="{approvalSlaDays}" type="Number" description="days" editable="{= ${ui>/currentUser/role} === 'Admin' }"/>
 
-                    <Label text="Language" />
-                    <ComboBox selectedKey="en">
-                        <core:Item key="en" text="English" />
-                        <core:Item key="de" text="German" />
-                        <core:Item key="fr" text="French" />
-                    </ComboBox>
+                                <core:Title text="Invoice &amp; Receipt Tolerances"/>
+                                <Label text="Invoice tolerance (%)"/>
+                                <Input value="{invoiceTolerancePct}" type="Number" description="%" editable="{= ${ui>/currentUser/role} === 'Admin' }"/>
+                                <Label text="Invoice tolerance (absolute)"/>
+                                <Input value="{invoiceToleranceAbs}" type="Number" description="USD, whichever is lower" editable="{= ${ui>/currentUser/role} === 'Admin' }"/>
+                                <Label text="Over-delivery tolerance"/>
+                                <Input value="{grOverDeliveryPct}" type="Number" description="%" editable="{= ${ui>/currentUser/role} === 'Admin' }"/>
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
 
-                    <Label text="Notifications" />
-                    <Switch state="true" customTextOn="Yes" customTextOff="No" />
-                </f:content>
-            </f:SimpleForm>
-            
-            <f:SimpleForm editable="true" layout="ColumnLayout" title="Procurement Rules" class="sapUiSmallMargin">
-                <f:content>
-                    <Label text="Auto-Approve PRs under" />
-                    <Input value="500" type="Number" description="USD" />
+                    <IconTabFilter key="budgets" text="Departments &amp; Budgets" icon="sap-icon://wallet">
+                        <Table id="deptTable" items="{path: '/Departments', parameters: {$orderby: 'name', $$updateGroupId: 'admin'}}">
+                            <columns>
+                                <Column><Text text="Department"/></Column>
+                                <Column><Text text="Manager"/></Column>
+                                <Column hAlign="End"><Text text="Annual Budget (USD)"/></Column>
+                                <Column hAlign="End"><Text text="Committed"/></Column>
+                                <Column width="30%"><Text text="Utilization"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <ObjectIdentifier title="{name}" text="{ID}"/>
+                                        <Text text="{manager/name}"/>
+                                        <Input value="{budgetAvailable}" type="Number" textAlign="End"
+                                            editable="{= ${ui>/currentUser/role} === 'Admin' || ${ui>/currentUser/role} === 'Finance' }"/>
+                                        <ObjectNumber number="{budgetUsed}" unit="USD"/>
+                                        <ProgressIndicator showValue="true"
+                                            percentValue="{= ${budgetAvailable} > 0 ? Math.min(100, Math.round(${budgetUsed} / ${budgetAvailable} * 100)) : 0 }"
+                                            displayValue="{= ${budgetAvailable} > 0 ? Math.round(${budgetUsed} / ${budgetAvailable} * 100) + '%' : '0%' }"
+                                            state="{= ${budgetAvailable} > 0 &amp;&amp; ${budgetUsed} / ${budgetAvailable} > 0.9 ? 'Error' : 'Success' }"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
 
-                    <Label text="Require 3 Bids Over" />
-                    <Input value="10000" type="Number" description="USD" />
-                </f:content>
-            </f:SimpleForm>
+                    <IconTabFilter key="users" text="User Management" icon="sap-icon://group" visible="{= ${ui>/currentUser/role} === 'Admin' }">
+                        <MessageStrip showIcon="true" type="Information" class="sapUiSmallMarginBottom"
+                            text="Users are never deleted - deactivate them to revoke access while keeping the audit trail intact."/>
+                        <Table id="usersTable" items="{path: '/Users', parameters: {$orderby: 'name', $$updateGroupId: 'admin'}}">
+                            <columns>
+                                <Column><Text text="User"/></Column>
+                                <Column><Text text="Email"/></Column>
+                                <Column><Text text="Department"/></Column>
+                                <Column><Text text="Line Manager"/></Column>
+                                <Column><Text text="Role"/></Column>
+                                <Column><Text text="Active"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <ObjectIdentifier title="{name}" text="{ID}"/>
+                                        <Text text="{email}"/>
+                                        <Text text="{department/name}"/>
+                                        <Text text="{manager/name}"/>
+                                        <Select selectedKey="{role}" width="10rem">
+                                            <core:Item key="Employee" text="Employee"/>
+                                            <core:Item key="Manager" text="Manager"/>
+                                            <core:Item key="Finance" text="Finance"/>
+                                            <core:Item key="Procurement" text="Procurement"/>
+                                            <core:Item key="Admin" text="Admin"/>
+                                        </Select>
+                                        <Switch state="{active}" customTextOn="Yes" customTextOff="No"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+
+                    <IconTabFilter key="prefs" text="Preferences" icon="sap-icon://action-settings">
+                        <f:SimpleForm editable="true" layout="ColumnLayout">
+                            <f:content>
+                                <Label text="Theme"/>
+                                <Select id="themeSelect" selectedKey="sap_horizon" change=".onThemeChange" width="16rem">
+                                    <core:Item key="sap_horizon" text="SAP Horizon (Light)"/>
+                                    <core:Item key="sap_horizon_dark" text="SAP Horizon (Dark)"/>
+                                    <core:Item key="sap_horizon_hcb" text="High Contrast Black"/>
+                                    <core:Item key="sap_horizon_hcw" text="High Contrast White"/>
+                                </Select>
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
         </content>
         <footer>
-            <Toolbar>
+            <OverflowToolbar>
                 <ToolbarSpacer/>
-                <Button text="Save Settings" type="Emphasized" press=".onSave" />
-            </Toolbar>
+                <Button text="Discard" press=".onDiscard"/>
+                <Button text="Save" type="Emphasized" press=".onSave"/>
+            </OverflowToolbar>
         </footer>
     </Page>
 </mvc:View>

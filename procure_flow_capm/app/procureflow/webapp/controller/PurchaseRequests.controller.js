@@ -3,12 +3,25 @@ sap.ui.define([
     "sap/ui/core/routing/History",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
-    "./PRDialogHelper"
-], function (Controller, History, Filter, FilterOperator, PRDialogHelper) {
+    "./PRDialogHelper",
+    "../model/formatter",
+    "../model/csv"
+], function (Controller, History, Filter, FilterOperator, PRDialogHelper, formatter, csv) {
     "use strict";
 
     return Controller.extend("procureflow.controller.PurchaseRequests", {
+        formatter: formatter,
+
         onInit: function () {
+        },
+
+        onExport: function () {
+            csv.downloadBinding(this.byId("prTable").getBinding("items"), "purchase-requests.csv", [
+                { label: "Request ID", path: "ID" }, { label: "Title", path: "title" },
+                { label: "Requestor", path: "requestor/name" }, { label: "Status", path: "status" },
+                { label: "Amount", path: "amount" }, { label: "Currency", path: "currency" },
+                { label: "Date", path: "date" }
+            ]);
         },
 
         onNavBack: function () {

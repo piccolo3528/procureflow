@@ -14,8 +14,13 @@
                 <Title text="ProcureFlow" level="H1" titleStyle="H3"/>
                 <ToolbarSpacer />
                 <SearchField width="300px" placeholder="Search POs, Requests, Vendors..." />
-                <Button icon="sap-icon://bell" type="Transparent" tooltip="Notifications" />
-                <Button icon="sap-icon://customer" type="Transparent" press=".onProfilePress" tooltip="Profile" text="{ui>/currentUser/name} ({ui>/currentUser/role})"/>
+                <Button id="notificationsButton" icon="sap-icon://bell" type="Transparent" tooltip="Notifications" press=".onNotificationsPress">
+                    <customData>
+                        <BadgeCustomData key="badge" value="{ui>/unreadCount}" visible="{= ${ui>/unreadCount} > 0 }" />
+                    </customData>
+                </Button>
+                <Button icon="sap-icon://customer" type="Transparent" press=".onProfilePress" enabled="{ui>/demoMode}"
+                        tooltip="{= ${ui>/demoMode} ? 'Switch demo user' : 'Signed in user' }" text="{ui>/currentUser/name} ({ui>/currentUser/role})"/>
             </tnt:ToolHeader>
         </tnt:header>
         <tnt:sideContent>
@@ -27,6 +32,9 @@
                         <tnt:NavigationListItem text="Approval Center" icon="sap-icon://accept" key="Approvals" />
                         <tnt:NavigationListItem text="Purchase Orders" icon="sap-icon://receipt" key="PurchaseOrders" />
                         <tnt:NavigationListItem text="Goods Receipt" icon="sap-icon://shipping-status" key="GoodsReceipts" />
+                    </tnt:NavigationListGroup>
+                    <tnt:NavigationListGroup text="Finance">
+                        <tnt:NavigationListItem text="Invoices &amp; Payments" icon="sap-icon://money-bills" key="Invoices" />
                     </tnt:NavigationListGroup>
                     <tnt:NavigationListGroup text="Master Data">
                         <tnt:NavigationListItem text="Vendor Management" icon="sap-icon://group" key="Vendors" />

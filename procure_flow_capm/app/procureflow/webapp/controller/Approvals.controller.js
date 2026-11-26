@@ -6,17 +6,21 @@ sap.ui.define([
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageToast",
     "sap/m/MessageBox",
-    "../model/actions"
-], function (Controller, Fragment, Filter, FilterOperator, JSONModel, MessageToast, MessageBox, actions) {
+    "../model/actions",
+    "../model/formatter"
+], function (Controller, Fragment, Filter, FilterOperator, JSONModel, MessageToast, MessageBox, actions, formatter) {
     "use strict";
 
     var PENDING_STATUS_BY_ROLE = {
         Manager: ["Pending Manager Approval"],
         Finance: ["Pending Finance Approval"],
-        Admin: ["Pending Manager Approval", "Pending Finance Approval"]
+        Procurement: ["Pending Head Approval"],
+        Admin: ["Pending Manager Approval", "Pending Finance Approval", "Pending Head Approval"]
     };
 
     return Controller.extend("procureflow.controller.Approvals", {
+        formatter: formatter,
+
         onInit: function () {
             this.getOwnerComponent().getRouter().getRoute("Approvals").attachPatternMatched(this._onRouteMatched, this);
         },

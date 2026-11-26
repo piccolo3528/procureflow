@@ -1,1 +1,10 @@
 node_modules/
+
+# build & deployment output
+gen/
+mta_archives/
+*.mtar
+app/router/resources/
+.cds-services.json
+default-env.json
+*.sqlite

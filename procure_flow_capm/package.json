@@ -2,15 +2,19 @@
   "name": "procure_flow_capm",
   "version": "1.0.0",
   "dependencies": {
-    "@sap/cds": "^9"
+    "@cap-js/hana": "^2",
+    "@sap/cds": "^9",
+    "@sap/xssec": "^4"
   },
   "devDependencies": {
+    "@cap-js/cds-test": "^1.0.2",
     "@cap-js/sqlite": "^2",
     "@sap/cds-dk": "^10.0.6"
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-procure_flow": "cds watch --open procureflow/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-procure_flow": "cds watch --open procureflow/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "test": "node --test test/"
   },
   "private": true,
   "workspaces": [
@@ -21,13 +25,46 @@
       "auth": {
         "kind": "mocked",
         "users": {
-          "U1": { "password": "U1", "roles": ["Employee"] },
-          "U2": { "password": "U2", "roles": ["Manager"] },
-          "U3": { "password": "U3", "roles": ["Finance"] },
-          "U4": { "password": "U4", "roles": ["Procurement"] },
-          "U5": { "password": "U5", "roles": ["Admin"] }
+          "U1": {
+            "password": "U1",
+            "roles": [
+              "Employee"
+            ]
+          },
+          "U2": {
+            "password": "U2",
+            "roles": [
+              "Manager"
+            ]
+          },
+          "U3": {
+            "password": "U3",
+            "roles": [
+              "Finance"
+            ]
+          },
+          "U4": {
+            "password": "U4",
+            "roles": [
+              "Procurement"
+            ]
+          },
+          "U5": {
+            "password": "U5",
+            "roles": [
+              "Admin"
+            ]
+          }
+        }
+      },
+      "[production]": {
+        "auth": {
+          "kind": "xsuaa"
         }
       }
     }
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true
   }
 }

@@ -57,6 +57,9 @@ entity PurchaseRequests : managed {
     vendor          : Association to Vendors;
     justification   : String;
     cancelReason    : String;
+    // approval stages derived from the approval matrix at submit time, e.g. "Manager>Finance>Head"
+    approvalRoute   : String;
+    budgetCommitted : Boolean default false;
     items           : Composition of many PurchaseRequestItems on items.parent = $self;
     approvalHistory : Association to many ApprovalHistory on approvalHistory.request = $self;
     comments        : Association to many Comments on comments.request = $self;
@@ -118,6 +121,7 @@ entity PurchaseOrders : managed {
     paymentTerms        : String;
     items               : Composition of many PurchaseOrderItems on items.parent = $self;
     goodsReceipts       : Association to many GoodsReceipts on goodsReceipts.purchaseOrder = $self;
+    invoices            : Association to many Invoices on invoices.purchaseOrder = $self;
 }
 
 entity PurchaseOrderItems {
@@ -130,6 +134,7 @@ entity PurchaseOrderItems {
     total                   : Decimal(15,2) default 0;
     expectedDeliveryDate    : Date;
     qtyReceived             : Integer default 0;
+    qtyInvoiced             : Integer default 0;
 }
 
 entity GoodsReceipts : managed {
@@ -154,4 +159,81 @@ entity GoodsReceiptItems {
     inspectionResult    : String; // Good, Damaged, Incomplete
     damageInfo          : String;
     remarks             : String;
+}
+
+// ---------------------------------------------------------------------------
+// Accounts Payable: Invoices (3-way match) and Payments
+// ---------------------------------------------------------------------------
+
+entity Invoices : managed {
+    key ID              : String;
+    purchaseOrder       : Association to PurchaseOrders;
+    vendor              : Association to Vendors;
+    vendorInvoiceNo     : String;
+    invoiceDate         : Date;
+    dueDate             : Date;
+    currency            : String(3) default 'USD';
+    netAmount           : Decimal(15,2) default 0;  // sum of invoice lines
+    taxAmount           : Decimal(15,2) default 0;
+    amount              : Decimal(15,2) default 0;  // gross = net + tax
+    expectedAmount      : Decimal(15,2) default 0;  // invoiced qty x PO price
+    variance            : Decimal(15,2) default 0;  // netAmount - expectedAmount
+    status              : String default 'Payment Pending'; // Payment Pending, Blocked, Paid, Rejected
+    blockReason         : String;
+    resolutionNote      : String;
+    postedBy            : Association to Users;
+    items               : Composition of many InvoiceItems on items.parent = $self;
+    payments            : Association to many Payments on payments.invoice = $self;
+}
+
+entity InvoiceItems {
+    key ID              : String;
+    parent              : Association to Invoices;
+    orderItem           : Association to PurchaseOrderItems;
+    description         : String;
+    qty                 : Integer default 0;
+    price               : Decimal(15,2) default 0;
+    total               : Decimal(15,2) default 0;
+    poPrice             : Decimal(15,2) default 0;
+    qtyBillable         : Integer default 0;  // received - previously invoiced, at posting time
+    matchStatus         : String;             // Matched, Quantity Variance, Price Variance
+}
+
+entity Payments : managed {
+    key ID              : String;
+    invoice             : Association to Invoices;
+    vendor              : Association to Vendors;
+    amount              : Decimal(15,2) default 0;
+    currency            : String(3) default 'USD';
+    method              : String;  // Wire, ACH, Check
+    reference           : String;
+    clearingDate        : Date;
+    status              : String default 'Paid'; // Pending, Paid, Failed
+    paidBy              : Association to Users;
+}
+
+// ---------------------------------------------------------------------------
+// Configuration & notifications
+// ---------------------------------------------------------------------------
+
+// single-row configuration table (ID = 'default') - approval matrix and AP tolerances
+entity Settings {
+    key ID                  : String;
+    managerOnlyLimit        : Decimal(15,2) default 1000;   // <= this: Manager approval only
+    headApprovalLimit       : Decimal(15,2) default 10000;  // >  this: + Procurement Head approval
+    invoiceTolerancePct     : Decimal(5,2)  default 5;      // invoice may exceed PO by this % ...
+    invoiceToleranceAbs     : Decimal(15,2) default 100;    // ... or this amount, whichever is lower
+    grOverDeliveryPct       : Decimal(5,2)  default 0;      // goods receipt over-delivery tolerance
+    approvalSlaDays         : Integer       default 3;
+    defaultCurrency         : String(3)     default 'USD';
+}
+
+entity Notifications : cuid {
+    recipient   : Association to Users;
+    title       : String;
+    message     : String;
+    documentID  : String;
+    priority    : String default 'Medium';
+    isRead      : Boolean default false;
+    createdAt   : Timestamp @cds.on.insert : $now;
 }

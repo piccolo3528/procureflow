@@ -1,0 +1,56 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Dialog id="postInvoiceDialog" title="Post Vendor Invoice" contentWidth="52rem" resizable="true" draggable="true">
+        <content>
+            <MessageStrip class="sapUiSmallMargin" showIcon="true" type="Information"
+                text="The invoice is matched against the Purchase Order price and the quantity actually received (3-way match). Invoices exceeding the tolerance are blocked for payment."/>
+            <f:SimpleForm editable="true" layout="ColumnLayout" columnsM="2" columnsL="2" columnsXL="2">
+                <f:content>
+                    <Label text="Purchase Order" required="true"/>
+                    <Select id="invoicePOSelect" forceSelection="false" selectedKey="{inv>/poId}" change=".onInvoicePOChange"
+                        items="{inv>/openPOs}">
+                        <core:Item key="{inv>ID}" text="{inv>ID} · {inv>vendorName} ({inv>status})"/>
+                    </Select>
+                    <Label text="Vendor Invoice No." required="true"/>
+                    <Input value="{inv>/vendorInvoiceNo}" placeholder="e.g. INV-88231"/>
+                    <Label text="Invoice Date"/>
+                    <DatePicker value="{inv>/invoiceDate}" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd"/>
+                    <Label text="Tax Amount"/>
+                    <Input value="{inv>/taxAmount}" type="Number" description="{inv>/currency}"/>
+                </f:content>
+            </f:SimpleForm>
+            <Table items="{inv>/items}" noDataText="Select a Purchase Order with received goods." class="sapUiSmallMarginBeginEnd">
+                <columns>
+                    <Column><Text text="Item"/></Column>
+                    <Column hAlign="End"><Text text="Ordered"/></Column>
+                    <Column hAlign="End"><Text text="Received"/></Column>
+                    <Column hAlign="End"><Text text="Already Invoiced"/></Column>
+                    <Column hAlign="End"><Text text="PO Price"/></Column>
+                    <Column width="8rem"><Text text="Invoice Qty"/></Column>
+                    <Column width="9rem"><Text text="Invoice Price"/></Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{inv>description}"/>
+                            <Text text="{inv>qty}"/>
+                            <Text text="{inv>qtyReceived}"/>
+                            <Text text="{inv>qtyInvoiced}"/>
+                            <ObjectNumber number="{inv>poPrice}"/>
+                            <StepInput value="{inv>invQty}" min="0"/>
+                            <Input value="{inv>invPrice}" type="Number"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+        <beginButton>
+            <Button text="Post &amp; Match" type="Emphasized" press=".onPostInvoiceConfirm"/>
+        </beginButton>
+        <endButton>
+            <Button text="Cancel" press=".onPostInvoiceCancel"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

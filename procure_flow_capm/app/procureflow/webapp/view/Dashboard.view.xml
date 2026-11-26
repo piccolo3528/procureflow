@@ -46,6 +46,31 @@
                     </GenericTile>
                 </layout:Grid>
 
+                <layout:Grid defaultSpan="XL3 L4 M6 S12" class="sapUiBottomMargin" visible="{= !!${kpi>/analytics} }">
+                    <GenericTile header="Committed Spend" subheader="Open &amp; closed POs" class="sapUiTinyMargin">
+                        <TileContent unit="USD">
+                            <NumericContent value="{path: 'kpi>/analytics/committedSpend', formatter: '.formatter.shortAmount'}" icon="sap-icon://money-bills" withMargin="false"/>
+                        </TileContent>
+                    </GenericTile>
+                    <GenericTile header="Budget Utilization" subheader="All departments" class="sapUiTinyMargin">
+                        <TileContent unit="%">
+                            <NumericContent value="{kpi>/analytics/budgetUtilization}" icon="sap-icon://pie-chart" withMargin="false"
+                                valueColor="{= ${kpi>/analytics/budgetUtilization} > 90 ? 'Error' : (${kpi>/analytics/budgetUtilization} > 70 ? 'Critical' : 'Good') }"/>
+                        </TileContent>
+                    </GenericTile>
+                    <GenericTile header="Avg. Approval Time" subheader="Submit to fully approved" class="sapUiTinyMargin">
+                        <TileContent unit="hours">
+                            <NumericContent value="{kpi>/analytics/avgApprovalHours}" icon="sap-icon://pending" withMargin="false"/>
+                        </TileContent>
+                    </GenericTile>
+                    <GenericTile header="Open Payables" subheader="{= ${kpi>/analytics/blockedInvoices} + ' invoice(s) blocked' }" class="sapUiTinyMargin">
+                        <TileContent unit="USD">
+                            <NumericContent value="{path: 'kpi>/analytics/openPayables', formatter: '.formatter.shortAmount'}" icon="sap-icon://payment-approval" withMargin="false"
+                                valueColor="{= ${kpi>/analytics/blockedInvoices} > 0 ? 'Critical' : 'Neutral' }"/>
+                        </TileContent>
+                    </GenericTile>
+                </layout:Grid>
+
                 <Title text="My Recent Purchase Requests" level="H2" class="sapUiTinyMarginBottom" />
                 <Table id="recentTable" items="{path: '/PurchaseRequests', parameters: {$orderby: 'date desc'}, length: 5}" mode="SingleSelectMaster" selectionChange=".onPRSelect">
                     <columns>
@@ -62,7 +87,7 @@
                                 <Text text="{title}" />
                                 <ObjectNumber number="{amount}" unit="{currency}" />
                                 <ObjectStatus text="{status}"
-                                    state="{= ${status} === 'Goods Received' || ${status} === 'PO Created' ? 'Success' : (${status} === 'Rejected' || ${status} === 'Cancelled' ? 'Error' : (${status} === 'Draft' ? 'None' : 'Warning')) }" />
+                                    state="{path: 'status', formatter: '.formatter.prStatusState'}" />
                                 <Text text="{date}" />
                             </cells>
                         </ColumnListItem>

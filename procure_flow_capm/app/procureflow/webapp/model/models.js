@@ -19,8 +19,14 @@ function (JSONModel, ODataModel, Device) {
         { id: "U5", name: "Amara Okafor", role: "Admin", avatar: "https://placehold.co/100x100/5B738B/FFFFFF?text=AO" }
     ];
 
+    // Demo mode (switchable mocked users) only when running locally against `cds watch`, or when
+    // forced with ?demo=true. Deployed behind the approuter, the identity comes from XSUAA instead.
+    var DEMO_MODE = ["localhost", "127.0.0.1"].indexOf(window.location.hostname) !== -1 ||
+        /[?&]demo=true/.test(window.location.search);
+
     return {
         DEMO_USERS: DEMO_USERS,
+        DEMO_MODE: DEMO_MODE,
 
         /**
          * Provides runtime information for the device the UI5 app is running on as a JSONModel.
@@ -41,8 +47,10 @@ function (JSONModel, ODataModel, Device) {
                 appState: {
                     sidebarExpanded: true
                 },
-                currentUser: DEMO_USERS[0],
-                demoUsers: DEMO_USERS
+                currentUser: DEMO_MODE ? DEMO_USERS[0] : { id: "", name: "", role: "Employee" },
+                unreadCount: 0,
+                demoMode: DEMO_MODE,
+                demoUsers: DEMO_MODE ? DEMO_USERS : []
             });
         },
 
@@ -51,12 +59,14 @@ function (JSONModel, ODataModel, Device) {
          * mocked CAP auth users - password equals the user ID for local dev only). The v4 model
          * has no supported way to change its Authorization header after construction, so
          * switching identity means constructing a fresh model instance.
+         * Without a user ID (production), no Authorization header is set and the approuter's
+         * session/JWT is used.
          * @param {string} sServiceUrl
-         * @param {string} sUserId
+         * @param {string} [sUserId]
          * @returns {sap.ui.model.odata.v4.ODataModel}
          */
         createODataModel: function (sServiceUrl, sUserId) {
-            var sToken = window.btoa(sUserId + ":" + sUserId);
+            var mHeaders = sUserId ? { "Authorization": "Basic " + window.btoa(sUserId + ":" + sUserId) } : {};
             return new ODataModel({
                 serviceUrl: sServiceUrl,
                 synchronizationMode: "None",
@@ -64,9 +74,7 @@ function (JSONModel, ODataModel, Device) {
                 autoExpandSelect: true,
                 earlyRequests: false,
                 groupId: "$auto",
-                httpHeaders: {
-                    "Authorization": "Basic " + sToken
-                }
+                httpHeaders: mHeaders
             });
         }
     };

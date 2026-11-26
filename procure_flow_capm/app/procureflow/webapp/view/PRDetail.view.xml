@@ -38,7 +38,7 @@
                 <layout:VerticalLayout class="sapUiSmallMarginRight sapUiSmallMarginBottom">
                     <Label text="Status" />
                     <ObjectStatus text="{status}"
-                        state="{= ${status} === 'Goods Received' || ${status} === 'PO Created' ? 'Success' : (${status} === 'Rejected' || ${status} === 'Cancelled' ? 'Error' : (${status} === 'Draft' ? 'None' : 'Warning')) }" />
+                        state="{path: 'status', formatter: '.formatter.prStatusState'}" />
                 </layout:VerticalLayout>
                 <layout:VerticalLayout class="sapUiSmallMarginRight sapUiSmallMarginBottom">
                     <Label text="Requestor" />
@@ -80,6 +80,10 @@
                                 <VBox>
                                     <Label text="Selected Vendor" class="sapUiTinyMarginBottom" design="Bold"/>
                                     <Text text="{= ${vendor/name} ? ${vendor/name} : 'Not yet selected' }" />
+                                </VBox>
+                                <VBox>
+                                    <Label text="Approval Route" class="sapUiTinyMarginBottom" design="Bold"/>
+                                    <Text text="{path: 'approvalRoute', formatter: '.formatter.approvalRoute'}" />
                                 </VBox>
                                 <VBox class="sapUiSmallMarginTop">
                                     <Label text="Business Justification" class="sapUiTinyMarginBottom" design="Bold"/>
@@ -197,7 +201,7 @@
                                             <ObjectIdentifier title="{ID}" />
                                             <Text text="{vendor/name}" />
                                             <ObjectNumber number="{amount}" unit="{currency}" />
-                                            <ObjectStatus text="{status}" state="{= ${status} === 'Closed' ? 'Success' : (${status} === 'Cancelled' ? 'Error' : 'Information') }"/>
+                                            <ObjectStatus text="{status}" state="{path: 'status', formatter: '.formatter.poStatusState'}"/>
                                             <Text text="{date}" />
                                         </cells>
                                     </ColumnListItem>

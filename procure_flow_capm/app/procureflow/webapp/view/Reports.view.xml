@@ -2,53 +2,157 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:mc="sap.suite.ui.microchart"
-    xmlns:layout="sap.ui.layout">
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core">
     <Page title="Reports &amp; Analytics" showNavButton="true" navButtonPress=".onNavBack">
+        <headerContent>
+            <Button icon="sap-icon://refresh" tooltip="Refresh" press=".onRefresh"/>
+            <MenuButton icon="sap-icon://excel-attachment" text="Export">
+                <menu>
+                    <Menu itemSelected=".onExport">
+                        <MenuItem key="requests" text="Spend Analysis (all requests)"/>
+                        <MenuItem key="departments" text="Budget Variance by Department"/>
+                        <MenuItem key="vendors" text="Vendor Spend"/>
+                    </Menu>
+                </menu>
+            </MenuButton>
+        </headerContent>
         <content>
-            <MessageStrip text="Full analytical reporting (charts, filters, export) is planned for a later phase. These figures are live counts from the backend." type="Information" showIcon="true" class="sapUiSmallMargin"/>
-            <layout:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSmallMargin">
-                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Total Requests" subheader="All time">
-                    <tileContent>
-                        <TileContent footer="Purchase Requests">
-                            <NumericContent value="{kpi>/totalRequests}" valueColor="Good" />
-                        </TileContent>
-                    </tileContent>
-                </GenericTile>
+            <IllustratedMessage illustrationType="sapIllus-UnableToLoad" enableVerticalResponsiveness="true"
+                title="Analytics are restricted" description="Enterprise spend analytics are available to Managers, Finance, Procurement and Admin."
+                visible="{= ${ui>/currentUser/role} === 'Employee' }"/>
 
-                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Pending Approvals" subheader="Across all stages">
-                    <tileContent>
-                        <TileContent>
-                            <NumericContent value="{kpi>/pendingApprovals}" valueColor="Critical" />
+            <VBox visible="{= ${ui>/currentUser/role} !== 'Employee' }" busy="{an>/busy}" class="sapUiSmallMargin">
+                <layout:Grid defaultSpan="XL3 L3 M6 S12">
+                    <GenericTile header="Total Requests" subheader="All time" class="sapUiTinyMargin">
+                        <TileContent footer="{= ${an>/data/pendingApprovals} + ' awaiting approval / sourcing' }">
+                            <NumericContent value="{an>/data/totalRequests}" icon="sap-icon://document-text" withMargin="false"/>
                         </TileContent>
-                    </tileContent>
-                </GenericTile>
+                    </GenericTile>
+                    <GenericTile header="Committed Spend" subheader="{= ${an>/data/activePOs} + ' active PO(s)' }" class="sapUiTinyMargin">
+                        <TileContent unit="USD" footer="Non-cancelled Purchase Orders">
+                            <NumericContent value="{path: 'an>/data/committedSpend', formatter: '.formatter.shortAmount'}" icon="sap-icon://money-bills" withMargin="false"/>
+                        </TileContent>
+                    </GenericTile>
+                    <GenericTile header="Paid to Vendors" subheader="Cleared payments" class="sapUiTinyMargin">
+                        <TileContent unit="USD" footer="{= 'Open payables ' + ${an>/data/openPayables} }">
+                            <NumericContent value="{path: 'an>/data/paidSpend', formatter: '.formatter.shortAmount'}" icon="sap-icon://payment-approval" valueColor="Good" withMargin="false"/>
+                        </TileContent>
+                    </GenericTile>
+                    <GenericTile header="Cycle Time" subheader="Average, in hours" class="sapUiTinyMargin">
+                        <TileContent unit="h" footer="{= 'PR to PO: ' + ${an>/data/avgPRtoPOHours} + ' h' }">
+                            <NumericContent value="{an>/data/avgApprovalHours}" icon="sap-icon://history" withMargin="false"/>
+                        </TileContent>
+                    </GenericTile>
+                </layout:Grid>
 
-                <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop" header="Active Purchase Orders" subheader="Issued or partially received">
-                    <tileContent>
-                        <TileContent footer="Not yet closed">
-                            <NumericContent value="{kpi>/activePOs}" valueColor="Neutral"/>
-                        </TileContent>
-                    </tileContent>
-                </GenericTile>
-            </layout:Grid>
-            <Panel headerText="Spend by Vendor" class="sapUiSmallMargin">
-                <Table items="{path: '/Vendors', parameters: {$orderby: 'spend desc'}}">
-                    <columns>
-                        <Column><Text text="Vendor" /></Column>
-                        <Column><Text text="Category" /></Column>
-                        <Column><Text text="Spend" /></Column>
-                    </columns>
-                    <items>
-                        <ColumnListItem>
-                            <cells>
-                                <Text text="{name}" />
-                                <Text text="{category}" />
-                                <ObjectNumber number="{spend}" unit="USD" />
-                            </cells>
-                        </ColumnListItem>
-                    </items>
-                </Table>
-            </Panel>
+                <layout:Grid defaultSpan="XL6 L6 M12 S12" class="sapUiSmallMarginTop">
+                    <Panel headerText="Budget Utilization by Department (%)">
+                        <mc:InteractiveBarChart bars="{an>/data/byDepartment}" displayedBars="6" min="0" max="100" selectionEnabled="false">
+                            <mc:bars>
+                                <mc:InteractiveBarChartBar label="{an>department}" value="{an>utilization}" displayedValue="{= ${an>utilization} + '%' }"
+                                    color="{= ${an>utilization} > 90 ? 'Error' : (${an>utilization} > 70 ? 'Critical' : 'Good') }"/>
+                            </mc:bars>
+                        </mc:InteractiveBarChart>
+                    </Panel>
+                    <Panel headerText="Requests by Status (count)">
+                        <mc:InteractiveBarChart bars="{an>/data/byStatus}" displayedBars="10" selectionEnabled="true" selectionChanged=".onStatusBarSelect">
+                            <mc:bars>
+                                <mc:InteractiveBarChartBar label="{an>label}" value="{an>count}"/>
+                            </mc:bars>
+                        </mc:InteractiveBarChart>
+                    </Panel>
+                    <Panel headerText="Spend by Category (approved requests)">
+                        <mc:InteractiveDonutChart segments="{an>/data/byCategory}" displayedSegments="6" selectionEnabled="false">
+                            <mc:segments>
+                                <mc:InteractiveDonutChartSegment label="{an>label}" value="{an>amount}" displayedValue="{path: 'an>amount', formatter: '.formatter.shortAmount'}"/>
+                            </mc:segments>
+                        </mc:InteractiveDonutChart>
+                    </Panel>
+                    <Panel headerText="Spend by Vendor (Purchase Orders)">
+                        <mc:InteractiveBarChart bars="{an>/data/byVendor}" displayedBars="6" selectionEnabled="false">
+                            <mc:bars>
+                                <mc:InteractiveBarChartBar label="{an>label}" value="{an>amount}" displayedValue="{path: 'an>amount', formatter: '.formatter.shortAmount'}"/>
+                            </mc:bars>
+                        </mc:InteractiveBarChart>
+                    </Panel>
+                </layout:Grid>
+
+                <Panel headerText="Budget Variance" class="sapUiSmallMarginTop">
+                    <Table items="{an>/data/byDepartment}">
+                        <columns>
+                            <Column><Text text="Department"/></Column>
+                            <Column hAlign="End"><Text text="Budget"/></Column>
+                            <Column hAlign="End"><Text text="Committed"/></Column>
+                            <Column hAlign="End"><Text text="Remaining"/></Column>
+                            <Column width="35%"><Text text="Utilization"/></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Text text="{an>department}"/>
+                                    <ObjectNumber number="{path: 'an>budget', formatter: '.formatter.amount'}" unit="USD"/>
+                                    <ObjectNumber number="{path: 'an>used', formatter: '.formatter.amount'}" unit="USD"/>
+                                    <ObjectNumber number="{path: 'an>remaining', formatter: '.formatter.amount'}" unit="USD"
+                                        state="{= ${an>remaining} &lt; 0 ? 'Error' : 'None' }"/>
+                                    <ProgressIndicator percentValue="{an>utilization}" displayValue="{= ${an>utilization} + '%' }" showValue="true"
+                                        state="{= ${an>utilization} > 90 ? 'Error' : (${an>utilization} > 70 ? 'Warning' : 'Success') }"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </Panel>
+
+                <Panel headerText="Drill-down: Purchase Requests" class="sapUiSmallMarginTop">
+                    <OverflowToolbar>
+                        <Select id="drillStatus" change=".onDrillFilter" width="16rem" forceSelection="false" selectedKey="">
+                            <core:Item key="" text="All statuses"/>
+                            <core:Item key="Pending Manager Approval" text="Pending Manager Approval"/>
+                            <core:Item key="Pending Finance Approval" text="Pending Finance Approval"/>
+                            <core:Item key="Pending Head Approval" text="Pending Head Approval"/>
+                            <core:Item key="Pending Procurement" text="Pending Procurement"/>
+                            <core:Item key="PO Created" text="PO Created"/>
+                            <core:Item key="Partially Received" text="Partially Received"/>
+                            <core:Item key="Goods Received" text="Goods Received"/>
+                            <core:Item key="Completed" text="Completed"/>
+                            <core:Item key="Rejected" text="Rejected"/>
+                            <core:Item key="Cancelled" text="Cancelled"/>
+                            <core:Item key="Draft" text="Draft"/>
+                        </Select>
+                        <Select id="drillDept" change=".onDrillFilter" width="12rem" forceSelection="false" selectedKey=""
+                            items="{path: '/Departments', parameters: {$orderby: 'name'}, templateShareable: false}">
+                            <core:Item key="{ID}" text="{name}"/>
+                        </Select>
+                        <Button text="Clear" type="Transparent" press=".onDrillClear"/>
+                        <DateRangeSelection id="drillDates" change=".onDrillFilter" width="16rem" displayFormat="yyyy-MM-dd" placeholder="Request date range"/>
+                    </OverflowToolbar>
+                    <Table id="drillTable" growing="true" growingThreshold="15" mode="SingleSelectMaster" selectionChange=".onDrillSelect"
+                        items="{path: '/PurchaseRequests', parameters: {$orderby: 'date desc'}, suspended: true}">
+                        <columns>
+                            <Column><Text text="Request"/></Column>
+                            <Column><Text text="Department"/></Column>
+                            <Column><Text text="Requestor"/></Column>
+                            <Column><Text text="Vendor"/></Column>
+                            <Column><Text text="Status"/></Column>
+                            <Column><Text text="Date"/></Column>
+                            <Column hAlign="End"><Text text="Amount"/></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem type="Navigation">
+                                <cells>
+                                    <ObjectIdentifier title="{ID}" text="{title}"/>
+                                    <Text text="{department/name}"/>
+                                    <Text text="{requestor/name}"/>
+                                    <Text text="{vendor/name}"/>
+                                    <ObjectStatus text="{status}" state="{path: 'status', formatter: '.formatter.prStatusState'}"/>
+                                    <Text text="{date}"/>
+                                    <ObjectNumber number="{amount}" unit="{currency}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </Panel>
+            </VBox>
         </content>
     </Page>
 </mvc:View>
